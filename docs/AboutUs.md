@@ -2,7 +2,7 @@
 
 Display |    Name     |           Github Profile            | Portfolio 
 --------|:-----------:|:-----------------------------------:|:---------:
-![](https://via.placeholder.com/100.png?text=Photo) |  John Doe   |    [Github](https://github.com/)    | [Portfolio](docs/team/johndoe.md)
+![](https://media.istockphoto.com/id/1361394182/photo/funny-british-shorthair-cat-portrait-looking-shocked-or-surprised.jpg?s=170667a&w=0&k=20&c=oZ5y1k7xV1AC7lX5yqrkFkemx49tOTOS0BOrxqysHsc=) | Benjamin Loh | [Github](https://github.com/benthejarofmint) | [Portfolio](docs/team/benjaminloh.md)
 ![](https://via.placeholder.com/100.png?text=Photo) |   Don Joe   |    [Github](https://github.com/)    | [Portfolio](docs/team/johndoe.md)
 ![](https://via.placeholder.com/100.png?text=Photo) |  Ron John   |    [Github](https://github.com/)    | [Portfolio](docs/team/johndoe.md)
 ![](https://via.placeholder.com/100.png?text=Photo) |  John Roe   |    [Github](https://github.com/)    | [Portfolio](docs/team/johndoe.md)
