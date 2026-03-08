@@ -3,7 +3,7 @@ package seedu.duke;
 
 public class Parser {
     /**
-     *
+     * Checks user command and calls functions according to the command
      * @param input user input string
      * @param list the current list of transactions
      * @param ui ui class

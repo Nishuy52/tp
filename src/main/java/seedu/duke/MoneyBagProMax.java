@@ -15,7 +15,7 @@ public class MoneyBagProMax {
             String input = ui.readInput();
             if (input.equals("exit")) {
                 break;
-            };
+            }
             parser.parse(input, list, ui);
         }
     }
