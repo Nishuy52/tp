@@ -50,7 +50,7 @@ class ParserTest {
     }
 
     @Test
-    public void parseSummaryCommand_EmptyList_printsNoTransactionsMessage() {
+    public void parseSummaryCommand_emptyList_printsNoTransactionsMessage() {
         TransactionList emptyList = new TransactionList();
         Ui ui = new Ui();
         Parser parser = new Parser();
