@@ -17,7 +17,7 @@ public class Income extends Transaction {
 
     @Override
     public String getType() {
-        return "Income";
+        return "income";
     }
 
     @Override
