@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // structure of test names: methodToTest_input_expectedOutput
 class ParserTest {
@@ -37,13 +38,15 @@ class ParserTest {
 
         list.add(new Expense("food", 10.50, "lunch", LocalDate.now()));
         list.add(new Expense("transport", 5.00, "bus", LocalDate.now()));
+        list.add(new Income("salary", 25.50, "monthly", LocalDate.now()));
+
 
         parser.parse("summary", list, ui);
 
         String expectedOutput = "----- Overall Summary -----" + System.lineSeparator() +
-                "Total Income: $0.00" + System.lineSeparator() +
+                "Total Income: $25.50" + System.lineSeparator() +
                 "Total Expense: $15.50" + System.lineSeparator() +
-                "Net Balance: $-15.50" + System.lineSeparator() +
+                "Net Balance: $10.00" + System.lineSeparator() +
                 "--------------------------" + System.lineSeparator();
 
         assertEquals(expectedOutput, outContent.toString());
@@ -58,6 +61,43 @@ class ParserTest {
         parser.parse("summary all", emptyList, ui);
 
         String expectedOutput = "No transactions found to summarise." + System.lineSeparator();
+        assertEquals(expectedOutput, outContent.toString());
+    }
+
+    @Test
+    public void parseAddCommand_incomeCategory_addsIncomeObject() {
+        TransactionList list = new TransactionList();
+        Ui ui = new Ui();
+        Parser parser = new Parser();
+
+        // Input simulates adding income
+        parser.parse("add income/50.00 desc/Salary d/2023-10-01", list, ui);
+
+        assertEquals(1, list.size(), "List should have 1 transaction");
+
+        // This is the crucial check: verifying it is an Income instance, not Expense
+        boolean isIncomeInstance = list.get(0) instanceof Income;
+        assertTrue(isIncomeInstance, "The added transaction should be an instance of Income");
+        assertEquals(50.00, list.get(0).getAmount(), 0.001);
+    }
+
+    @Test
+    public void parseSummaryCommand_onlyIncome_printsCorrectTotals() {
+        TransactionList list = new TransactionList();
+        Ui ui = new Ui();
+        Parser parser = new Parser();
+
+        list.add(new Income("salary", 5000.00, "monthly", LocalDate.now()));
+
+        parser.parse("summary", list, ui);
+
+        // Verify that Total Expense is $0.00 and Net Balance matches Income
+        String expectedOutput = "----- Overall Summary -----" + System.lineSeparator() +
+                "Total Income: $5000.00" + System.lineSeparator() +
+                "Total Expense: $0.00" + System.lineSeparator() +
+                "Net Balance: $5000.00" + System.lineSeparator() +
+                "--------------------------" + System.lineSeparator();
+
         assertEquals(expectedOutput, outContent.toString());
     }
 }

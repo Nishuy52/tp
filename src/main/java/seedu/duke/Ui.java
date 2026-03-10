@@ -17,6 +17,8 @@ public class Ui {
         System.out.println("Adding an expense: `add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`\n"
                 + " - desc/ and d/ are optional.\n"
                 + " - Date defaults to today if omitted.\n"
+                + " - Valid categories include: `food`, `transport`, `utilities`, "
+                + "`education`, `rent`, `medical`, `misc`\n"
                 + " - Example: add food/10 desc/lunch d/2025-03-01");
         System.out.println("Adding an income: `add income/PRICE`");
         System.out.println("Deleting an expense or income: `delete [ENTRY INDEX]`");
