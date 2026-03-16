@@ -9,8 +9,6 @@ import seedu.duke.command.ListCommand;
 import seedu.duke.command.SummaryCommand;
 import seedu.duke.command.HelpCommand;
 import seedu.duke.command.FindCommand;
-import seedu.duke.transactionlist.TransactionList;
-import seedu.duke.ui.Ui;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -21,10 +19,8 @@ public class Parser {
      * Checks user command and calls functions according to the command.
      *
      * @param input The user input string.
-     * @param list  The current list of transactions.
-     * @param ui    The ui instance.
      */
-    public Command parse(String input, TransactionList list, Ui ui) throws MoneyBagProMaxException {
+    public Command parse(String input) throws MoneyBagProMaxException {
         if (input == null || input.trim().isEmpty()) {
             throw new MoneyBagProMaxException("Please enter a command.");
         }

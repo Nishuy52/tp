@@ -20,7 +20,7 @@ public class MoneyBagProMax {
         while (!isExit) {
             String input = ui.readInput();
             try {
-                Command command = parser.parse(input, list, ui);
+                Command command = parser.parse(input);
                 command.execute(list, ui);
                 isExit = command.isExit();
             } catch (MoneyBagProMaxException e) {
