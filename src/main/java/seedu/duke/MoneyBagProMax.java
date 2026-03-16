@@ -1,5 +1,10 @@
 package seedu.duke;
 
+import seedu.duke.command.Command;
+import seedu.duke.parser.Parser;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
+
 public class MoneyBagProMax {
     /**
      * Main entry-point for the java.duke.MoneyBagProMax application.
@@ -10,13 +15,17 @@ public class MoneyBagProMax {
         Ui ui = new Ui();
 
         ui.showWelcomeMessage();
+        boolean isExit = false;
 
-        while (true) {
+        while (!isExit) {
             String input = ui.readInput();
-            if (input.equals("exit") || input.equals("q")) {
-                break;
+            try {
+                Command command = parser.parse(input);
+                command.execute(list, ui);
+                isExit = command.isExit();
+            } catch (MoneyBagProMaxException e) {
+                ui.showMessage(e.getMessage());
             }
-            parser.parse(input, list, ui);
         }
     }
 }

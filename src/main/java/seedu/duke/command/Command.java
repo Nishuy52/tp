@@ -1,0 +1,23 @@
+package seedu.duke.command;
+
+import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
+
+public abstract class Command {
+    /**
+     * Executes the command.
+     *
+     * @param list The current list of transactions.
+     * @param ui   The ui instance.
+     */
+    public abstract void execute(TransactionList list, Ui ui) throws MoneyBagProMaxException;
+
+    /**
+     * Indicates whether this command should exit the application.
+     * Defaults to false, but the ExitCommand will override this to return true to exit.
+     */
+    public boolean isExit() {
+        return false;
+    }
+}

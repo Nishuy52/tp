@@ -1,8 +1,13 @@
-package seedu.duke;
+package seedu.duke.transaction;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.command.Command;
+import seedu.duke.parser.Parser;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -28,13 +33,14 @@ public class IncomeTest {
     }
     
     @Test
-    public void parseAddCommand_incomeCategory_addsIncomeObject() {
+    public void parseAddCommand_incomeCategory_addsIncomeObject() throws MoneyBagProMaxException {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
         Parser parser = new Parser();
 
         // Input simulates adding income
-        parser.parse("add income/50.00 desc/Salary d/2023-10-01", list, ui);
+        Command command = parser.parse("add income/50.00 desc/Salary d/2023-10-01");
+        command.execute(list, ui);
 
         assertEquals(1, list.size(), "List should have 1 transaction");
 
@@ -45,21 +51,22 @@ public class IncomeTest {
     }
 
     @Test
-    public void parseSummaryCommand_onlyIncome_printsCorrectTotals() {
+    public void parseSummaryCommand_onlyIncome_printsCorrectTotals() throws MoneyBagProMaxException {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
         Parser parser = new Parser();
 
         list.add(new Income("salary", 5000.00, "monthly", LocalDate.now()));
 
-        parser.parse("summary", list, ui);
+        Command command = parser.parse("summary");
+        command.execute(list, ui);
 
         // Verify that Total Expense is $0.00 and Net Balance matches Income
-        String expectedOutput = "----- Overall Summary -----" + System.lineSeparator() +
+        String expectedOutput = "===== Overall Summary =====" + System.lineSeparator() +
                 "Total Income: $5000.00" + System.lineSeparator() +
                 "Total Expense: $0.00" + System.lineSeparator() +
                 "Net Balance: $5000.00" + System.lineSeparator() +
-                "--------------------------" + System.lineSeparator();
+                "===========================" + System.lineSeparator();
 
         assertEquals(expectedOutput, outContent.toString());
     }
