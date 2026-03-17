@@ -1,7 +1,6 @@
 package seedu.duke.transaction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
@@ -30,21 +29,28 @@ class TransactionTest {
     }
 
     @Test
-    public void toString_expenseWithDescription_containsCategoryAndAmount() {
+    public void getCategory_expenseWithCategory_returnsCorrectCategory() {
+        Expense expense = new Expense("transport", 2.00, "bus fare", LocalDate.now());
+        assertEquals("transport", expense.getCategory());
+    }
+
+    @Test
+    public void getDate_expenseWithDate_returnsCorrectDate() {
+        LocalDate date = LocalDate.of(2025, 3, 1);
+        Expense expense = new Expense("food", 5.00, "lunch", date);
+        assertEquals(date, expense.getDate());
+    }
+
+    @Test
+    public void toString_expenseWithDescription_exactFormat() {
         Expense expense = new Expense("food", 8.00, "dinner", LocalDate.of(2025, 3, 1));
-        String result = expense.toString();
-        assertTrue(result.contains("[Expense]"));
-        assertTrue(result.contains("food"));
-        assertTrue(result.contains("8.00"));
-        assertTrue(result.contains("dinner"));
+        assertEquals("[Expense] food \"dinner\" $8.00 (2025-03-01)", expense.toString());
     }
 
     @Test
     public void toString_expenseWithoutDescription_omitsQuotedDescription() {
         Expense expense = new Expense("misc", 3.00, "", LocalDate.of(2025, 3, 1));
-        String result = expense.toString();
-        // No description suffix should appear (no double-quote characters)
-        assertTrue(!result.contains("\""));
+        assertEquals("[Expense] misc $3.00 (2025-03-01)", expense.toString());
     }
 
     // ── Income ────────────────────────────────────────────────────────────────
@@ -62,11 +68,26 @@ class TransactionTest {
     }
 
     @Test
-    public void toString_incomeWithDescription_containsCategoryAndAmount() {
+    public void getDescription_incomeWithDescription_returnsDescription() {
+        Income income = new Income("income", 100.00, "freelance", LocalDate.now());
+        assertEquals("freelance", income.getDescription());
+    }
+
+    @Test
+    public void getCategory_incomeWithCategory_returnsCorrectCategory() {
+        Income income = new Income("salary", 5000.00, "monthly", LocalDate.now());
+        assertEquals("salary", income.getCategory());
+    }
+
+    @Test
+    public void toString_incomeWithDescription_exactFormat() {
         Income income = new Income("income", 1000.00, "monthly", LocalDate.of(2025, 3, 1));
-        String result = income.toString();
-        assertTrue(result.contains("[Income]"));
-        assertTrue(result.contains("1000.00"));
-        assertTrue(result.contains("monthly"));
+        assertEquals("[Income] income \"monthly\" $1000.00 (2025-03-01)", income.toString());
+    }
+
+    @Test
+    public void toString_incomeWithoutDescription_omitsQuotedDescription() {
+        Income income = new Income("income", 500.00, "", LocalDate.of(2025, 3, 1));
+        assertEquals("[Income] income $500.00 (2025-03-01)", income.toString());
     }
 }
