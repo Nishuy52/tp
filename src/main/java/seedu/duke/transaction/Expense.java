@@ -21,17 +21,11 @@ public class Expense extends Transaction {
     }
 
     public Expense(String category, double amount, String description) {
-        super(category, amount, description);
-        assert VALID_CATEGORIES.contains(category) : "Expense category must be one of: " + VALID_CATEGORIES;
-        logger.log(Level.INFO, "Created Expense — category: {0}, amount: {1}, description: \"{2}\", date: today ({3})",
-                new Object[]{category, amount, description, LocalDate.now()});
+        this(category, amount, description, LocalDate.now());
     }
 
     public Expense(String category, double amount) {
-        super(category, amount);
-        assert VALID_CATEGORIES.contains(category) : "Expense category must be one of: " + VALID_CATEGORIES;
-        logger.log(Level.INFO, "Created Expense — category: {0}, amount: {1}, no description, date: today ({2})",
-                new Object[]{category, amount, LocalDate.now()});
+        this(category, amount, "", LocalDate.now());
     }
 
     @Override
