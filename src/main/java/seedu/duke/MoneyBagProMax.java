@@ -41,4 +41,8 @@ public class MoneyBagProMax {
         }
         logger.info("Gracefully exited the MoneyBagProMax application.");
     }
+
+    public static int getMaxRetries() {
+        return 5;
+    }
 }
