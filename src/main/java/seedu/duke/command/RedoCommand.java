@@ -7,6 +7,10 @@ import seedu.duke.ui.Ui;
 import seedu.duke.undoredo.UndoRedoManager;
 import seedu.duke.undoredo.UndoRedoManager.ActionPair;
 
+/**
+ * Re-applies the last undone command by performing the original
+ * operation on the transaction list again.
+ */
 public class RedoCommand extends Command {
 
     private final UndoRedoManager undoRedoManager;

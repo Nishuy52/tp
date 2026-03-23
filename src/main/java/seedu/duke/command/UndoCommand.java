@@ -7,6 +7,10 @@ import seedu.duke.ui.Ui;
 import seedu.duke.undoredo.UndoRedoManager;
 import seedu.duke.undoredo.UndoRedoManager.ActionPair;
 
+/**
+ * Reverses the last mutating command (add or delete) by performing
+ * the inverse operation on the transaction list.
+ */
 public class UndoCommand extends Command {
 
     private final UndoRedoManager undoRedoManager;

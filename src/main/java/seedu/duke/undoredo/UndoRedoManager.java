@@ -9,6 +9,12 @@ import java.util.Deque;
 /**
  * Manages undo and redo history for mutating commands (add, delete).
  * Stores (action, transaction, index) triples in two stacks.
+ *
+ * <p><b>Invariant:</b> Stored indices assume operations are undone and
+ * redone in strict LIFO stack order.  Because both stacks enforce this,
+ * the recorded indices remain correct for sequential undo/redo
+ * sequences.  If a non-stack-ordered replay is ever needed, the index
+ * scheme must be revisited.</p>
  */
 public class UndoRedoManager {
 
