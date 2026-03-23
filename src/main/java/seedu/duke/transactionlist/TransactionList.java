@@ -5,6 +5,7 @@ import seedu.duke.transaction.Transaction;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -15,6 +16,10 @@ import java.util.logging.Logger;
 public class TransactionList {
 
     private static final Logger logger = Logger.getLogger(TransactionList.class.getName());
+    // sets the logger to only trigger logger levels WARNING and SEVERE to reduce clutter
+    static {
+        logger.setLevel(Level.WARNING);
+    }
     private final ArrayList<Transaction> transactions = new ArrayList<>();
 
     /**
@@ -76,6 +81,19 @@ public class TransactionList {
         assert i >= 0 && i < transactions.size() : "Index is out of bounds";
         logger.info("Removing transaction at index: " + i);
         return transactions.remove(i);
+    }
+
+    /**
+     * Inserts a transaction at the specified index, shifting subsequent elements right.
+     *
+     * @param index position at which to insert
+     * @param t     the transaction to insert
+     */
+    public void insert(int index, Transaction t) {
+        assert index >= 0 && index <= transactions.size() : "Insert index is out of bounds";
+        assert t != null : "Transaction should not be null";
+        logger.info("Inserting transaction at index " + index + ": " + t);
+        transactions.add(index, t);
     }
 
     /**

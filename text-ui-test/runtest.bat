@@ -29,17 +29,19 @@ if errorlevel 1 (
     echo [FAIL] Application crashed during run -- check input.txt and output above
     exit /b 1
 )
+cd ..\..\text-ui-test
+powershell -NoProfile -Command ^
+    "$text = (Get-Content ACTUAL.TXT -Raw) -replace '\x1b\[[0-9;]*[a-zA-Z]', ''; [System.IO.File]::WriteAllText('ACTUAL.TXT', $text, (New-Object System.Text.UTF8Encoding $False))"
 echo [PASS] Application run
 
 :: ── step 4: resolve date placeholder ─────────────────────────────────────────
-cd ..\..\text-ui-test
 
 for /f "tokens=1-3 delims=-" %%a in (
     'powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd"'
 ) do set TODAY=%%a-%%b-%%c
 
 powershell -NoProfile -Command ^
-    "(Get-Content EXPECTED.TXT) -replace '\{TODAY\}', '%TODAY%' | Set-Content EXPECTED-RESOLVED.TXT"
+    "$text = (Get-Content EXPECTED.TXT -Raw) -replace '\{TODAY\}', '%TODAY%'; [System.IO.File]::WriteAllText('EXPECTED-RESOLVED.TXT', $text, (New-Object System.Text.UTF8Encoding $False))"
 if errorlevel 1 (
     echo [FAIL] Could not resolve {TODAY} placeholder in EXPECTED.TXT
     exit /b 1

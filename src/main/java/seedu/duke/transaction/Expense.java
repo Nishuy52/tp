@@ -12,6 +12,10 @@ public class Expense extends Transaction {
     );
     
     private static final Logger logger = Logger.getLogger(Expense.class.getName());
+    // sets the logger to only trigger logger levels WARNING and SEVERE to reduce clutter
+    static {
+        logger.setLevel(Level.WARNING);
+    }
     
     public Expense(String category, double amount, String description, LocalDate date) {
         super(category, amount, description, date);

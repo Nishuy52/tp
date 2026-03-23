@@ -23,8 +23,8 @@ if [ -z "$JAR" ]; then
     fail "No jar found in ../build/libs/"
 fi
 
-java -jar "$JAR" < input.txt > ACTUAL.TXT
-if [ $? -ne 0 ]; then
+java -jar "$JAR" < input.txt | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g' > ACTUAL.TXT
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
     fail "Application crashed during run — check input.txt and stack trace above"
 fi
 pass "Application run"
