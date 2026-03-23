@@ -1,14 +1,24 @@
 package seedu.duke.ui;
 
-//can be customised more, problems for later
+import seedu.duke.transactionlist.TransactionList;
 
 import java.util.Scanner;
 
 public class Ui {
+
+    public static final String ANSI_BRIGHT_GREEN = "\u001B[1;32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_RESET = "\u001B[0m";
+
+    public static final String DIVIDER = "_".repeat(60);
+
     private final Scanner scanner = new Scanner(System.in);
 
     public String readInput() {
+        System.out.println();
+        // System.out.println(ANSI_YELLOW);
         System.out.print("Enter a command: ");
+        // System.out.println(ANSI_RESET);
         return scanner.nextLine().trim();
     }
 
@@ -56,17 +66,40 @@ public class Ui {
     }
 
     public void showWelcomeMessage() {
+        printWelcomeBanner();
+        System.out.println(DIVIDER);
         System.out.println("Welcome to MoneyBagProMax, give us your money.");
         System.out.println("Enter `help` to check the list of available commands.");
+        System.out.println(DIVIDER);
     }
 
     public void showExitMessage() {
         System.out.println("Goodbye. Thank you for investing in MoneyBagProMax.");
     }
 
+    private void printWithDividers(String message) {
+        System.out.println(DIVIDER);
+        System.out.println(message);
+        System.out.println(DIVIDER);
+    }
+
     public void showMessage(String message) {
         assert message != null : "Message should not be null";
-        System.out.println(message);
+        printWithDividers(message);
+    }
+
+    public void showList(TransactionList list) {
+        System.out.println(DIVIDER);
+
+        if (list.isEmpty()) {
+            System.out.println("No transactions found.");
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println((i + 1) + ". " + list.get(i));
+            }
+        }
+
+        System.out.println(DIVIDER);
     }
 
     public void showOverallSummary(double income, double expense) {
@@ -82,6 +115,23 @@ public class Ui {
     public void showCategorySummary(String category, double categoryTotal) {
         assert category != null && !category.isBlank() : "Category should not be null or blank";
         assert categoryTotal >= 0 : "Category total should not be negative";
-        System.out.printf("Total for %s: $%.2f%n", category, categoryTotal);
+        printWithDividers(String.format("Total for %s: $%.2f", category, categoryTotal));
+    }
+
+    public static void printWelcomeBanner() {
+        //System.out.println(ANSI_BRIGHT_GREEN);
+        System.out.print("""
+                    .___.        
+                   /     \\       
+                  |       |      
+                  `-.   .-`      
+                 /   \\ /   \\     
+                |   $$$$$   |    
+                |  $$$$$$$  |    
+                |   $$$$$   |    
+                 \\         /     
+                  `-------`      
+            """);
+        //System.out.println(ANSI_RESET);
     }
 }
