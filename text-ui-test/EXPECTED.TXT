@@ -13,37 +13,21 @@ Welcome to MoneyBagProMax, give us your money.
 Enter `help` to check the list of available commands.
 ____________________________________________________________
 
-Enter a command: ____________________________________________________________
-Added: [Expense] food $10.00 ({TODAY})
-____________________________________________________________
+Enter a command: Added: [Expense] food $10.00 ({TODAY})
 
-Enter a command: ____________________________________________________________
-Added: [Expense] food "lunch" $10.00 ({TODAY})
-____________________________________________________________
+Enter a command: Added: [Expense] food "lunch" $10.00 ({TODAY})
 
-Enter a command: ____________________________________________________________
-Added: [Expense] food "lunch" $10.00 (2025-03-01)
-____________________________________________________________
+Enter a command: Added: [Expense] food "lunch" $10.00 (2025-03-01)
 
-Enter a command: ____________________________________________________________
-Added: [Expense] food $10.00 (2025-03-01)
-____________________________________________________________
+Enter a command: Added: [Expense] food $10.00 (2025-03-01)
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid date format — expected yyyy-MM-dd. Using today's date.
-____________________________________________________________
+Enter a command: [ERROR!] Invalid date format — expected yyyy-MM-dd. Using today's date.
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid price.
-____________________________________________________________
+Enter a command: [ERROR!] Invalid price.
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid price.
-____________________________________________________________
+Enter a command: [ERROR!] Invalid price.
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid, try: add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]
-____________________________________________________________
+Enter a command: [ERROR!] Invalid, try: add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]
 
 Enter a command: ____________________________________________________________
 1. [Expense] food $10.00 ({TODAY})
@@ -58,33 +42,19 @@ Total Expense: $40.00
 Net Balance: $-40.00
 ===========================
 
-Enter a command: ____________________________________________________________
-Deleted: [Expense] food $10.00 ({TODAY})
-____________________________________________________________
+Enter a command: Deleted: [Expense] food $10.00 ({TODAY})
 
-Enter a command: ____________________________________________________________
-Deleted: [Expense] food "lunch" $10.00 ({TODAY})
-____________________________________________________________
+Enter a command: Deleted: [Expense] food "lunch" $10.00 ({TODAY})
 
-Enter a command: ____________________________________________________________
-Deleted: [Expense] food "lunch" $10.00 (2025-03-01)
-____________________________________________________________
+Enter a command: Deleted: [Expense] food "lunch" $10.00 (2025-03-01)
 
-Enter a command: ____________________________________________________________
-Deleted: [Expense] food $10.00 (2025-03-01)
-____________________________________________________________
+Enter a command: Deleted: [Expense] food $10.00 (2025-03-01)
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid transaction index. Please provide a number between 1 and 0.
-____________________________________________________________
+Enter a command: [ERROR!] Invalid transaction index. Please provide a number between 1 and 0.
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid transaction index. Please provide a number between 1 and 0.
-____________________________________________________________
+Enter a command: [ERROR!] Invalid transaction index. Please provide a number between 1 and 0.
 
-Enter a command: ____________________________________________________________
-[ERROR!] Invalid, try: delete INDEX
-____________________________________________________________
+Enter a command: [ERROR!] Invalid, try: delete INDEX
 
 Enter a command: ============================================================
                   MoneyBagProMax Help Menu
@@ -123,8 +93,6 @@ Enter a command: ============================================================
                  - Exits the program.
 ============================================================
 
-Enter a command: ____________________________________________________________
-[ERROR!] Unknown command. Type `help` to see the list of available commands.
-____________________________________________________________
+Enter a command: [ERROR!] Unknown command. Type `help` to see the list of available commands.
 
 Enter a command: Goodbye. Thank you for investing in MoneyBagProMax.

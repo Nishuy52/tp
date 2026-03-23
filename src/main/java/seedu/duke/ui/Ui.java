@@ -85,7 +85,7 @@ public class Ui {
 
     public void showMessage(String message) {
         assert message != null : "Message should not be null";
-        printWithDividers(message);
+        System.out.println(message);
     }
 
     public void showList(TransactionList list) {
