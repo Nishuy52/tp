@@ -29,12 +29,11 @@ if errorlevel 1 (
     echo [FAIL] Application crashed during run -- check input.txt and output above
     exit /b 1
 )
-
-powershell -NoProfile -Command "(Get-Content ACTUAL.TXT -Raw) -replace '\x1b\[[0-9;]*[a-zA-Z]', '' | Set-Content ACTUAL.TXT"
+cd ..\..\text-ui-test
+powershell -NoProfile -Command "(Get-Content ACTUAL.TXT -Raw) -replace '\x1b\[[0-9;]*[a-zA-Z]', '' | Set-Content ACTUAL.TXT -Encoding UTF8"
 echo [PASS] Application run
 
 :: ── step 4: resolve date placeholder ─────────────────────────────────────────
-cd ..\..\text-ui-test
 
 for /f "tokens=1-3 delims=-" %%a in (
     'powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd"'
