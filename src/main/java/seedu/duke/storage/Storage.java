@@ -58,19 +58,24 @@ public class Storage {
                 if (f == null) {
                     continue;
                 }
+                try {
                     String type        = f.get("type");
                     String category    = f.get("category");
-                    double amount      = Double.parseDouble(f.get("amount"));
+                    String amountStr   = f.get("amount");
                     String description = f.getOrDefault("description", "");
-                    LocalDate date     = LocalDate.parse(f.get("date"));
+                    String dateStr     = f.get("date");
+                    if (type == null || category == null || amountStr == null || dateStr == null) continue;
+                    double amount  = Double.parseDouble(amountStr);
+                    LocalDate date = LocalDate.parse(dateStr);
                     Transaction t = switch (type) {
                         case "income"  -> new Income(category, amount, description, date);
                         case "expense" -> new Expense(category, amount, description, date);
                         default        -> null;
                     };
-                    if (t != null) {
-                        list.add(t);
-                    }
+                    if (t != null) list.add(t);
+                } catch (Exception e) {
+                    System.out.println("[WARN] Skipping malformed line: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to load data: " + e.getMessage());
