@@ -31,4 +31,14 @@ public abstract class Command {
     public boolean isMutating() {
         return false;
     }
+
+    /**
+     * Returns whether this command mutates the recurring transaction list.
+     * Used by the main loop to determine if recurring storage should be saved after execution.
+     *
+     * @return boolean — true if the command modifies the recurring list, false otherwise.
+     */
+    public boolean isMutatingRecurring() {
+        return false;
+    }
 }
