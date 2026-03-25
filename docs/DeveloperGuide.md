@@ -197,10 +197,9 @@ The pipe-delimited `[TXN] | key=value` format is human-readable and easy to exte
 Assertions are used throughout to enforce preconditions such as non-null inputs and positive amounts, consistent with the defensive programming approach used elsewhere in the codebase.
 
 ### Alternatives Considered
-One alternative was to use Java's `ObjectOutputStream` for binary serialization, which would require less parsing code.
-However, this produces opaque binary files that are difficult to inspect or repair manually, and are brittle across refactors that rename classes.
-Another alternative was a database such as SQLite, but this would introduce an external dependency disproportionate to the application's scope.
-The plain-text flat-file approach was chosen for its simplicity, transparency, and zero external dependencies.
+One alternative was to store transactions in JSON format, which would provide a more structured and widely recognised data format. However, this would require importing a third-party JSON library, introducing an external dependency for a task that a simple custom parser can handle adequately.
+Another alternative was a database such as SQLite, but this was considered overkill for an application that only needs to persist a flat list of transactions with no relational queries.
+The plain-text pipe-delimited format was chosen for its simplicity, zero external dependencies, and ease of manual inspection or editing if needed.
 
 ### Future Improvements
 Possible future improvements include supporting multiple save files or profiles, compressing the data file for large transaction histories, and adding a backup rotation strategy to retain recent snapshots in case of data corruption.
