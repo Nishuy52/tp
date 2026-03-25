@@ -1,7 +1,12 @@
 package seedu.duke.parser;
 
 import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.command.AddCommand;
+import seedu.duke.command.AddRecurringCommand;
 import seedu.duke.command.Command;
+import seedu.duke.command.DeleteRecurringCommand;
+import seedu.duke.command.GenerateRecurringCommand;
+import seedu.duke.command.ListRecurringCommand;
 import seedu.duke.command.SortCommand;
 import seedu.duke.command.UndoCommand;
 import seedu.duke.command.RedoCommand;
@@ -67,5 +72,47 @@ class ParserTest {
         Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
         Command command = parser.parse("redo");
         assertInstanceOf(RedoCommand.class, command);
+    }
+
+    @Test
+    public void parse_addWithRecFlag_returnsAddRecurringCommand() throws MoneyBagProMaxException {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+        Command command = parser.parse("add food/10 rec/weekly");
+        assertInstanceOf(AddRecurringCommand.class, command);
+    }
+
+    @Test
+    public void parse_addWithoutRecFlag_returnsAddCommand() throws MoneyBagProMaxException {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+        Command command = parser.parse("add food/10");
+        assertInstanceOf(AddCommand.class, command);
+    }
+
+    @Test
+    public void parse_listRec_returnsListRecurringCommand() throws MoneyBagProMaxException {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+        Command command = parser.parse("list-rec");
+        assertInstanceOf(ListRecurringCommand.class, command);
+    }
+
+    @Test
+    public void parse_deleteRec_returnsDeleteRecurringCommand() throws MoneyBagProMaxException {
+        RecurringTransactionList recurringList = new RecurringTransactionList();
+        Parser parser = new Parser(new UndoRedoManager(), recurringList);
+        Command command = parser.parse("delete-rec 1");
+        assertInstanceOf(DeleteRecurringCommand.class, command);
+    }
+
+    @Test
+    public void parse_genRec_returnsGenerateRecurringCommand() throws MoneyBagProMaxException {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+        Command command = parser.parse("gen-rec");
+        assertInstanceOf(GenerateRecurringCommand.class, command);
+    }
+
+    @Test
+    public void parse_addWithInvalidFrequency_throwsException() {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+        assertThrows(MoneyBagProMaxException.class, () -> parser.parse("add food/10 rec/yearly"));
     }
 }
