@@ -114,6 +114,80 @@ Both commands adhere to the application's Command pattern structure. The diagram
 
 ---
 
+## Sort Transaction Feature
+
+### Overview
+The `sort` command allows users to view their transactions ordered by date, amount, or category,
+without modifying the underlying list order. It is a read-only operation that creates a temporary
+sorted copy purely for display.
+
+### Architecture and Flow
+When the user enters a sort command (e.g., `sort by/date`), the input is passed from the `Ui`
+to the `Parser`. The `Parser` calls `parseSortCommand()`, which validates the `by/` prefix and
+the criteria string. A `SortCommand` is created with the validated criteria and returned to the
+main loop. During execution, `SortCommand` constructs an appropriate `Comparator<Transaction>`,
+calls `TransactionList.getSortedList(comparator)` to obtain a sorted defensive copy, and displays
+the results through the `Ui`.
+
+### Sequence Diagram
+The following sequence diagram illustrates the interaction when a user sorts transactions by date.
+
+![Sort Sequence Diagram](diagrams/SortSequenceDiagram.png)
+
+### Implementation Details
+- **Parsing:** `Parser.parseSortCommand()` validates the `by/` prefix and checks the criteria
+  against the three accepted values: `"date"`, `"amount"`, and `"category"`. Any other value
+  throws a `MoneyBagProMaxException`.
+- **Comparator selection:** `SortCommand.execute()` uses a `switch` statement to build the
+  appropriate comparator:
+  - `date` — `Comparator.comparing(Transaction::getDate)` (ascending, earliest first)
+  - `amount` — `Comparator.comparingDouble(Transaction::getAmount).reversed()` (descending,
+    largest first)
+  - `category` — `Comparator.comparing(Transaction::getCategory, String.CASE_INSENSITIVE_ORDER)`
+    (alphabetical, case-insensitive)
+- **Non-mutating:** `TransactionList.getSortedList()` copies the list into a new `ArrayList`,
+  sorts the copy using `Collections.sort()`, and returns it. The original `TransactionList` is
+  never modified. `SortCommand` does not override `isMutating()`, so it inherits `false` from
+  the base `Command` class — no auto-save is triggered after execution.
+
+### Class Diagram
+![Sort Class Diagram](diagrams/SortClassDiagram.png)
+
+### Design Considerations
+- **Non-mutating design:** The sort command deliberately returns a sorted copy rather than sorting
+  the list in place. This preserves the user's insertion order and avoids corrupting the indices
+  stored by `UndoRedoManager`. If sort modified the list order, previously recorded undo/redo
+  indices would point to the wrong transactions, breaking the undo/redo feature.
+- **Leveraging Java standard library:** Using `Comparator` method references and
+  `Comparator.comparing()` avoids hand-written comparison logic, which is verbose and prone to
+  sign errors. The standard library comparators are well-tested and handle edge cases (e.g., null
+  dates) more robustly.
+- **`isMutating()` returns false:** Because the original list is unchanged, no storage save is
+  needed after sort. This is an intentional contract with the main loop — sort is a view command,
+  not a data command.
+
+### Alternatives Considered
+- **In-place sort with an "unsort" command:** Sorting the actual list is simpler to implement but
+  destroys the insertion order that `UndoRedoManager` relies on. Providing an "unsort" command to
+  restore original order would require persisting the original order separately, significantly
+  increasing complexity. The defensive-copy approach was chosen for simplicity and correctness.
+- **Caching the sorted result:** Storing the last sort result in `TransactionList` could avoid
+  re-sorting on repeated calls. However, any add/delete/edit operation would stale the cache,
+  requiring cache-invalidation logic. Since the list is small for a personal finance app and
+  sorting is O(n log n), this optimization was deemed unnecessary.
+- **Persistent sort order:** An alternative was to make sort permanently reorder the list and
+  save to storage. This was rejected because users expect sort to be a display-only operation,
+  not a data mutation. Making it persistent would also conflict with undo/redo index semantics.
+
+### Future Improvements
+- Support multi-key sorting (e.g., `sort by/category by/date` to sort by category then date
+  within each category).
+- Add an ascending/descending toggle (e.g., `sort by/amount asc`).
+- Display original list indices alongside sorted results so users can reference them for
+  subsequent `delete` or `edit` commands.
+
+---
+
 ## Product scope
 ### Target user profile
 
