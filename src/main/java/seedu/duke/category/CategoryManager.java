@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * Manages custom categories and store them to data/categories.txt.
- * The 7 built-in categories defined in Expense cannot be removed and are stored separately.
+ * The 7 hard-coded categories in Expense.VALID_CATEGORIES cannot be removed
  */
 public class CategoryManager {
 
@@ -55,12 +55,12 @@ public class CategoryManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("[WARN] Could not load custom categories: " + e.getMessage());
+            System.out.println("Could not load custom categories: " + e.getMessage());
         }
     }
 
     /**
-     * Automatically writes the categories to the txt file.
+     * Writes custom categories to data/categories.txt using a temp file then move procedure
      */
     private void save() {
         try {
@@ -70,14 +70,14 @@ public class CategoryManager {
             Files.write(tmp, new ArrayList<>(customCategories));
             Files.move(tmp, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            System.out.println("[WARN] Could not save custom categories: " + e.getMessage());
+            System.out.println("Could not save custom categories: " + e.getMessage());
         }
     }
 
     /**
      * Adds the new custom category defined by the user
      * @param name defined by user
-     * @return true when added, false if exists
+     * @return true when added, false if exists or matches a hard-coded category
      */
     public boolean addCustomCategory(String name) {
         String lower = name.toLowerCase();
@@ -115,7 +115,7 @@ public class CategoryManager {
     /**
      * Checks the validity of an expense category
      * @param category being checked 
-     * @return true if category is valid, be it given or user-defined, false otherwise. 
+     * @return true if category is valid, be it built-in or user-defined, false otherwise. 
      */
     public boolean isValidExpenseCategory(String category) {
         String lower = category.toLowerCase();

@@ -20,7 +20,7 @@ public class CategoryCommand extends Command {
     /**
      * Constructor for category command
      * @param action add remove or list
-     * @param name name of the category provided
+     * @param name name of the category provided, or empty string if category is list
      */
     public CategoryCommand(String action, String name) {
         assert action != null : "Action must not be null";
