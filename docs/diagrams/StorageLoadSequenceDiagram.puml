@@ -1,0 +1,75 @@
+@startuml StorageLoadSequenceDiagram
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 5
+skinparam sequenceParticipant underline
+
+participant ":MoneyBagProMax" as Main
+participant ":Storage" as Storage
+participant ":Files" as Files
+participant ":TransactionList" as TList
+participant ":Transaction" as T
+
+Main -> Storage : load(list)
+activate Storage
+
+Storage -> Files : createDirectories("data/")
+activate Files
+Files --> Storage
+deactivate Files
+
+Storage -> Files : exists("data/transactions.txt")
+activate Files
+Files --> Storage : boolean
+deactivate Files
+
+alt file does not exist
+    Storage -> Files : createFile("data/transactions.txt")
+    activate Files
+    Files --> Storage
+    deactivate Files
+    Storage --> Main
+else file exists
+    loop while list is not empty
+        Storage -> TList : remove(0)
+        activate TList
+        TList --> Storage
+        deactivate TList
+    end
+
+    Storage -> Files : readAllLines("data/transactions.txt")
+    activate Files
+    Files --> Storage : lines
+    deactivate Files
+
+    loop for each line in lines
+        opt line starts with [TXN]
+            Storage -> Storage : parseLine(line)
+            activate Storage #LightGray
+            Storage --> Storage : fields : Map
+            deactivate Storage
+        end
+    
+        opt fields is valid
+            Storage -> Storage : validateAndBuild(fields, line)
+            activate Storage #LightGray
+            Storage --> Storage : t : Transaction
+            deactivate Storage
+    
+            create T
+            Storage -> T : <<create>>
+        end
+    
+        opt t is not null
+            Storage -> TList : add(t)
+            activate TList
+            TList --> Storage
+            deactivate TList
+        end
+    end
+
+    Storage --> Main
+end
+
+deactivate Storage
+
+@enduml

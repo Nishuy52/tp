@@ -44,7 +44,6 @@ class StorageTest {
         Files.deleteIfExists(Paths.get(REC_TMP));
     }
 
-    // load()
     @Test
     void load_noFileExists_createsEmptyFile() throws MoneyBagProMaxException {
         storage.load(list);
@@ -87,18 +86,18 @@ class StorageTest {
         storage.load(loaded);
 
         assertEquals(1, loaded.size());
-        assertEquals("salary",  loaded.get(0).getCategory());
-        assertEquals(3000.0,    loaded.get(0).getAmount());
-        assertEquals("income",  loaded.get(0).getType());
+        assertEquals("salary", loaded.get(0).getCategory());
+        assertEquals(3000.0, loaded.get(0).getAmount());
+        assertEquals("income", loaded.get(0).getType());
     }
 
     @Test
     void load_multipleTransactions_allRestored() throws MoneyBagProMaxException {
-        list.add(new Expense("food",      10.0,   "lunch",
+        list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
-        list.add(new Income("salary",     3000.0, "march pay",
+        list.add(new Income("salary", 3000.0, "march pay",
                             LocalDate.of(2026, 3, 1)));
-        list.add(new Expense("transport", 2.50,   "bus",
+        list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
         storage.save(list);
 
@@ -115,7 +114,7 @@ class StorageTest {
                           "[TXN] | type=expense | category=food | amount=INVALID | date=2026-03-23\n");
 
         storage.load(list);
-        assertEquals(0, list.size()); // malformed line skipped, no crash
+        assertEquals(0, list.size());
     }
 
     @Test
@@ -125,7 +124,7 @@ class StorageTest {
                           "[TXN] | type=transfer | category=misc | amount=50.0 | description= | date=2026-03-23\n");
 
         storage.load(list);
-        assertEquals(0, list.size()); // unknown type skipped, no crash
+        assertEquals(0, list.size());
     }
 
     @Test
@@ -139,7 +138,6 @@ class StorageTest {
         assertEquals("", list.get(0).getDescription());
     }
 
-    // save()
     @Test
     void save_emptyList_writesEmptyFile() throws MoneyBagProMaxException {
         storage.save(list);
@@ -148,7 +146,7 @@ class StorageTest {
 
     @Test
     void save_afterDelete_fileReflectsDeletion() throws MoneyBagProMaxException {
-        list.add(new Expense("food",      10.0, "lunch",
+        list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
         list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
@@ -169,7 +167,6 @@ class StorageTest {
                              LocalDate.of(2026, 3, 23)));
         storage.save(list);
 
-        // Save again with different data
         TransactionList updated = new TransactionList();
         updated.add(new Income("salary", 500.0, "allowance",
                                LocalDate.of(2026, 3, 1)));
@@ -181,7 +178,6 @@ class StorageTest {
         assertEquals("income", loaded.get(0).getType());
     }
 
-    // save -> load tests
     @Test
     void load_expenseWithEmptyDescription_preservedCorrectly() throws MoneyBagProMaxException {
         list.add(new Expense("misc", 5.0, "", 
@@ -191,8 +187,8 @@ class StorageTest {
         TransactionList loaded = new TransactionList();
         storage.load(loaded);
 
-        assertEquals("",     loaded.get(0).getDescription());
-        assertEquals(5.0,    loaded.get(0).getAmount());
+        assertEquals("", loaded.get(0).getDescription());
+        assertEquals(5.0, loaded.get(0).getAmount());
         assertEquals("misc", loaded.get(0).getCategory());
     }
 
@@ -216,30 +212,29 @@ class StorageTest {
                              LocalDate.of(2026, 3, 22)));
         storage.save(list);
 
-        // Load into a list that already has a transaction
         TransactionList loaded = new TransactionList();
         loaded.add(new Expense("misc", 99.0, "stale", 
                                LocalDate.of(2026, 1, 1)));
         storage.load(loaded);
 
-        assertEquals(2, loaded.size()); // stale entry replaced, not appended
+        assertEquals(2, loaded.size());
     }
 
     @Test
     void save_andLoad_preservesTransactionOrder() throws MoneyBagProMaxException {
-        list.add(new Expense("food",      10.0,  "lunch", 
+        list.add(new Expense("food", 10.0, "lunch", 
                              LocalDate.of(2026, 3, 23)));
-        list.add(new Income("salary",     3000.0, "pay",
+        list.add(new Income("salary", 3000.0, "pay",
                             LocalDate.of(2026, 3, 1)));
-        list.add(new Expense("transport", 2.50,  "bus",
+        list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
         storage.save(list);
 
         TransactionList loaded = new TransactionList();
         storage.load(loaded);
 
-        assertEquals("food",      loaded.get(0).getCategory());
-        assertEquals("salary",    loaded.get(1).getCategory());
+        assertEquals("food", loaded.get(0).getCategory());
+        assertEquals("salary", loaded.get(1).getCategory());
         assertEquals("transport", loaded.get(2).getCategory());
     }
 
@@ -314,14 +309,91 @@ class StorageTest {
 
     @Test
     void save_noDataDirectory_createsItAndSaves() throws MoneyBagProMaxException, IOException {
-        // Remove the data directory if it exists
         Files.deleteIfExists(Paths.get(DATA_FILE));
         Files.deleteIfExists(Paths.get("data"));
 
         list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
-        storage.save(list); // should create data/ and write the file
+        storage.save(list);
 
         assertTrue(Files.exists(Paths.get(DATA_FILE)));
+    }
+
+    @Test
+    void load_negativeAmount_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | amount=-10.0"
+                                  + " | description=lunch | date=2026-03-23\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_zeroAmount_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | amount=0.0 | description=lunch | date=2026-03-23\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_invalidDateFormat_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | amount=10.0 | description=lunch | date=23-03-2026\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_missingAmountField_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | description=lunch | date=2026-03-23\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_missingDateField_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | amount=10.0 | description=lunch\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_missingCategoryField_skipped() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | amount=10.0 | description=lunch | date=2026-03-23\n");
+
+        storage.load(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void load_corruptedAndValidMixed_onlyValidLoaded() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        Files.writeString(Paths.get(DATA_FILE),
+                          "[TXN] | type=expense | category=food | amount=10.0"
+                                  + " | description=lunch | date=2026-03-23\n"
+                                  + "[TXN] | type=expense | category=food | amount=-5.0"
+                                  + " | description=bad | date=2026-03-23\n"
+                                  + "[TXN] | type=income | category=salary | amount=3000.0"
+                                  + " | description=pay | date=2026-03-01\n");
+
+        storage.load(list);
+        assertEquals(2, list.size());
+        assertEquals("food", list.get(0).getCategory());
+        assertEquals("salary", list.get(1).getCategory());
     }
 }

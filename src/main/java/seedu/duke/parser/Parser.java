@@ -7,21 +7,24 @@ import seedu.duke.command.Command;
 import seedu.duke.command.DeleteCommand;
 import seedu.duke.command.DeleteRecurringCommand;
 import seedu.duke.command.ExitCommand;
+import seedu.duke.command.ExportCsvCommand;
+import seedu.duke.command.ExportTxtCommand;
+import seedu.duke.command.FilterCommand;
+import seedu.duke.command.FindCommand;
 import seedu.duke.command.GenerateRecurringCommand;
+import seedu.duke.command.HelpCommand;
 import seedu.duke.command.ListCommand;
 import seedu.duke.command.ListRecurringCommand;
 import seedu.duke.command.RedoCommand;
-import seedu.duke.command.SummaryCommand;
-import seedu.duke.command.HelpCommand;
-import seedu.duke.command.FindCommand;
 import seedu.duke.command.SortCommand;
+import seedu.duke.command.SummaryCommand;
 import seedu.duke.command.UndoCommand;
 import seedu.duke.command.EditCommand;
+import seedu.duke.command.BudgetCommand;
+import seedu.duke.command.StatsCommand;
 import seedu.duke.transaction.Frequency;
 import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.undoredo.UndoRedoManager;
-import seedu.duke.command.BudgetCommand;
-import seedu.duke.command.StatsCommand;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -92,6 +95,21 @@ public class Parser {
             return parseDeleteRecurringCommand(arguments);
         case "gen-rec":
             return new GenerateRecurringCommand(recurringList);
+        case "filter":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Invalid format. Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
+            }
+            return parseFilterCommand(arguments);
+        case "export-csv":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Usage: export-csv FILEPATH");
+            }
+            return new ExportCsvCommand(arguments);
+        case "export-data":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Usage: export-data FILEPATH");
+            }
+            return new ExportTxtCommand(arguments);
         default:
             throw new MoneyBagProMaxException("Unknown command. Type `help` to see the list of available commands.");
         }
@@ -256,7 +274,7 @@ public class Parser {
         }
         throw new MoneyBagProMaxException("Unknown budget command.");
     }
-  
+
     private Command parseEditCommand(String args) throws MoneyBagProMaxException {
         String[] parts = args.split(" ", 2);
         if (parts.length < 2) {
@@ -271,7 +289,6 @@ public class Parser {
             throw new MoneyBagProMaxException("Invalid index. Use: edit INDEX [category]/PRICE ...");
         }
 
-        // Reuse the same parsing logic as parseAddCommand by splitting on the first "/"
         String remainder = parts[1].trim();
         String[] categoryAndRest = remainder.split("/", 2);
         if (categoryAndRest.length < 2) {
@@ -313,6 +330,44 @@ public class Parser {
             return new DeleteRecurringCommand(index, recurringList);
         } catch (NumberFormatException e) {
             throw new MoneyBagProMaxException("Invalid, try: delete-rec INDEX");
+        }
+    }
+
+    private Command parseFilterCommand(String args) throws MoneyBagProMaxException {
+        if (!args.contains("from/") || !args.contains("to/")) {
+            throw new MoneyBagProMaxException(
+                    "Invalid format. Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
+        }
+
+        try {
+            int fromStart = args.indexOf("from/") + "from/".length();
+            String fromToken = args.substring(fromStart).split(" ")[0].trim();
+
+            int toStart = args.indexOf("to/") + "to/".length();
+            String toToken = args.substring(toStart).split(" ")[0].trim();
+
+            if (fromToken.isEmpty()) {
+                throw new MoneyBagProMaxException("Missing 'from' date parameter.");
+            }
+            if (toToken.isEmpty()) {
+                throw new MoneyBagProMaxException("Missing 'to' date parameter.");
+            }
+
+            LocalDate from = LocalDate.parse(fromToken);
+            LocalDate to = LocalDate.parse(toToken);
+
+            if (from.isAfter(to)) {
+                throw new MoneyBagProMaxException("The 'from' date cannot be after the 'to' date!");
+            }
+
+            return new FilterCommand(from, to);
+
+        } catch (DateTimeParseException e) {
+            throw new MoneyBagProMaxException("Invalid date format — expected YYYY-MM-DD. "
+                    + "Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
+        } catch (IndexOutOfBoundsException e) {
+            throw new MoneyBagProMaxException("Missing date values! "
+                    + "Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
         }
     }
 }

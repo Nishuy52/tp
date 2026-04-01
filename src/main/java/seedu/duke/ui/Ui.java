@@ -90,7 +90,9 @@ public class Ui {
                                  - Example: delete-rec 2
                 16. Generate   : `gen-rec`
                                  - Generates all due recurring transactions up to today.
-                17. Exit       : `exit`
+                17. Filter     : `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`
+                                 - Filters your transactions based on the time frame given
+                18. Exit       : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
 
