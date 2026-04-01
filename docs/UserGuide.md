@@ -250,6 +250,10 @@ Creates a recurring transaction template. MoneyBagProMax will automatically gene
 - `FREQUENCY` must be one of: `daily`, `weekly`, `monthly` (case-insensitive)
 - `d/YYYY-MM-DD` sets the start date; defaults to today if omitted
 - The category determines whether the entry is an expense or income (same valid categories as `add`)
+- `rec/FREQUENCY` must appear **at the end** of the command — it cannot be placed before `desc/` or `d/`
+
+> [!NOTE]
+> For valid expense and income categories, see [Adding an Expense](#adding-an-expense-add-expense-category) and [Adding an Income](#adding-an-income-add-income-category).
 
 **Examples**:
 - `add food/10 desc/lunch rec/daily` — Creates a daily $10 lunch expense template starting today.
@@ -380,10 +384,10 @@ MoneyBagProMax automatically saves your task data in a text file located at `./d
 | **Budget Set**  | `budget set AMOUNT`                                                 | `budget set 1000`                              |
 | **Budget Status** | `budget status`                                                   | —                                              |
 | **Stats**       | `stats`                                                             | —                                              |
-| **Add Recurring** | `add [category]/PRICE [desc/DESCRIPTION] [d/DATE] rec/FREQUENCY` | `add food/10 desc/lunch rec/daily`             |
-| **List Recurring** | `list-rec`                                                       | —                                              |
-| **Delete Recurring** | `delete-rec INDEX`                                             | `delete-rec 2`                                 |
-| **Generate Recurring** | `gen-rec`                                                    | —                                              |
+| **Add Recurring**      | `add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD] rec/FREQUENCY` | `add food/10 desc/lunch rec/daily`  |
+| **List Recurring**     | `list-rec`                                                              | —                                   |
+| **Delete Recurring**   | `delete-rec INDEX`                                                      | `delete-rec 2`                      |
+| **Generate Recurring** | `gen-rec`                                                               | —                                   |
 | **Filter**      | `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`                         | `filter from/2026-01-01 to/2026-03-31`         |
 | **Export CSV**  | `export-csv FILEPATH`                                               | `export-csv ~/transactions.csv`                |
 | **Export Data** | `export-data FILEPATH`                                              | `export-data ~/backup/transactions.txt`         |
