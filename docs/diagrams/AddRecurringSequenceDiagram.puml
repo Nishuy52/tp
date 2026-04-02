@@ -1,7 +1,7 @@
 @startuml AddRecurringSequenceDiagram
 skinparam sequenceArrowThickness 2
 skinparam roundcorner 5
-skinparam sequenceParticipant underline
+skinparam sequenceParticipant none
 
 actor User
 participant ":Ui" as Ui
