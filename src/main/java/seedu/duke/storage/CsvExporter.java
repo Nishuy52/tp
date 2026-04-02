@@ -29,10 +29,10 @@ public class CsvExporter {
             }
             Path path = Paths.get(outputPath);
             Files.write(path, lines);
+            return path;
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to export CSV: " + e.getMessage());
         }
-        return null;
     }
 
     private String escape(String value) {
