@@ -1,0 +1,89 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class "{abstract}\nCommand" as Command {
+    +execute(list, budget, ui)
+    +isMutating() : boolean
+    +isMutatingRecurring() : boolean
+}
+
+class AddRecurringCommand {
+    -category : String
+    -amount : double
+    -description : String
+    -frequency : Frequency
+    -startDate : LocalDate
+    +execute(list, budget, ui)
+    +isMutatingRecurring() : boolean
+}
+
+class ListRecurringCommand {
+    +execute(list, budget, ui)
+}
+
+class DeleteRecurringCommand {
+    -index : int
+    +execute(list, budget, ui)
+    +isMutatingRecurring() : boolean
+}
+
+class GenerateRecurringCommand {
+    +execute(list, budget, ui)
+    +isMutating() : boolean
+    +isMutatingRecurring() : boolean
+}
+
+class RecurringTransactionList {
+    +add(rt)
+    +get(i) : RecurringTransaction
+    +remove(i) : RecurringTransaction
+    +size() : int
+    +isEmpty() : boolean
+}
+
+class RecurringTransaction {
+    -category : String
+    -amount : double
+    -description : String
+    -frequency : Frequency
+    -startDate : LocalDate
+    -lastGeneratedDate : LocalDate
+    +setLastGeneratedDate(date)
+    +isIncome() : boolean
+    +isExpense() : boolean
+}
+
+enum Frequency {
+    DAILY
+    WEEKLY
+    MONTHLY
+    +next(date) : LocalDate
+    +fromString(s) : Frequency
+}
+
+class TransactionList {
+    +add(t)
+    +size() : int
+}
+
+class Parser {
+    +parse(input) : Command
+}
+
+Command <|-- AddRecurringCommand
+Command <|-- ListRecurringCommand
+Command <|-- DeleteRecurringCommand
+Command <|-- GenerateRecurringCommand
+
+Parser --> Command
+
+AddRecurringCommand --> RecurringTransactionList
+ListRecurringCommand --> RecurringTransactionList
+DeleteRecurringCommand --> RecurringTransactionList
+GenerateRecurringCommand --> RecurringTransactionList
+GenerateRecurringCommand --> TransactionList
+
+RecurringTransactionList --> RecurringTransaction
+RecurringTransaction --> Frequency
+@enduml

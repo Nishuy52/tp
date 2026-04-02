@@ -5,7 +5,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import seedu.duke.MoneyBagProMaxException;
 import seedu.duke.transaction.Expense;
+import seedu.duke.transaction.Frequency;
 import seedu.duke.transaction.Income;
+import seedu.duke.transaction.RecurringTransaction;
+import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
 
 import java.io.IOException;
@@ -13,13 +16,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StorageTest {
 
     private static final String DATA_FILE = "data/transactions.txt";
-    private static final String TMP_FILE = "data/transactions.txt.tmp";
+    private static final String TMP_FILE  = "data/transactions.txt.tmp";
+    private static final String REC_FILE  = "data/recurring.txt";
+    private static final String REC_TMP   = "data/recurring.txt.tmp";
     
     private Storage storage;
     private TransactionList list;
@@ -34,6 +40,8 @@ class StorageTest {
     void tearDown() throws IOException {
         Files.deleteIfExists(Paths.get(DATA_FILE));
         Files.deleteIfExists(Paths.get(TMP_FILE));
+        Files.deleteIfExists(Paths.get(REC_FILE));
+        Files.deleteIfExists(Paths.get(REC_TMP));
     }
 
     @Test
@@ -228,6 +236,77 @@ class StorageTest {
         assertEquals("food", loaded.get(0).getCategory());
         assertEquals("salary", loaded.get(1).getCategory());
         assertEquals("transport", loaded.get(2).getCategory());
+    }
+
+    // loadRecurring() / saveRecurring() round-trip tests
+
+    @Test
+    void saveRecurring_andLoad_restoresTemplate() throws MoneyBagProMaxException {
+        RecurringTransactionList recList = new RecurringTransactionList();
+        LocalDate start = LocalDate.of(2026, 3, 1);
+        recList.add(new RecurringTransaction("food", 10.0, "lunch", Frequency.WEEKLY, start));
+        storage.saveRecurring(recList);
+
+        RecurringTransactionList loaded = new RecurringTransactionList();
+        storage.loadRecurring(loaded);
+
+        assertEquals(1, loaded.size());
+        assertEquals("food", loaded.get(0).getCategory());
+        assertEquals(10.0, loaded.get(0).getAmount());
+        assertEquals("lunch", loaded.get(0).getDescription());
+        assertEquals(Frequency.WEEKLY, loaded.get(0).getFrequency());
+        assertEquals(start, loaded.get(0).getStartDate());
+        assertNull(loaded.get(0).getLastGeneratedDate());
+    }
+
+    @Test
+    void saveRecurring_withLastGeneratedDate_roundTripsCorrectly() throws MoneyBagProMaxException {
+        RecurringTransactionList recList = new RecurringTransactionList();
+        LocalDate start = LocalDate.of(2026, 3, 1);
+        LocalDate lastGen = LocalDate.of(2026, 3, 24);
+        RecurringTransaction rt = new RecurringTransaction("salary", 500.0, "", Frequency.MONTHLY, start);
+        rt.setLastGeneratedDate(lastGen);
+        recList.add(rt);
+        storage.saveRecurring(recList);
+
+        RecurringTransactionList loaded = new RecurringTransactionList();
+        storage.loadRecurring(loaded);
+
+        assertEquals(1, loaded.size());
+        assertEquals(lastGen, loaded.get(0).getLastGeneratedDate());
+    }
+
+    @Test
+    void saveRecurring_nullLastGeneratedDate_roundTripsAsNull() throws MoneyBagProMaxException {
+        RecurringTransactionList recList = new RecurringTransactionList();
+        recList.add(new RecurringTransaction("food", 10.0, "", Frequency.DAILY, LocalDate.of(2026, 3, 1)));
+        storage.saveRecurring(recList);
+
+        RecurringTransactionList loaded = new RecurringTransactionList();
+        storage.loadRecurring(loaded);
+
+        assertNull(loaded.get(0).getLastGeneratedDate());
+    }
+
+    @Test
+    void loadRecurring_noFile_createsEmptyList() throws MoneyBagProMaxException {
+        RecurringTransactionList recList = new RecurringTransactionList();
+        storage.loadRecurring(recList);
+        assertTrue(recList.isEmpty());
+    }
+
+    @Test
+    void saveRecurring_noDataDirectory_createsItAndSaves() throws MoneyBagProMaxException, IOException {
+        Files.deleteIfExists(Paths.get(DATA_FILE));
+        Files.deleteIfExists(Paths.get(REC_FILE));
+        Files.deleteIfExists(Paths.get("data/categories.txt"));
+        Files.deleteIfExists(Paths.get("data"));
+
+        RecurringTransactionList recList = new RecurringTransactionList();
+        recList.add(new RecurringTransaction("food", 10.0, "", Frequency.DAILY, LocalDate.of(2026, 3, 1)));
+        storage.saveRecurring(recList);
+
+        assertTrue(Files.exists(Paths.get(REC_FILE)));
     }
 
     @Test

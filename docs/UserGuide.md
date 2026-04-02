@@ -20,6 +20,10 @@ manage budgets, and gain insights into your spending habits via a simple applica
     - [Redoing an Action: `redo`](#redoing-an-action-redo)
     - [Managing your Budget: `budget`](#managing-your-budget-budget)
     - [Viewing Spending Statistics: `stats`](#viewing-spending-statistics-stats)
+    - [Adding a Recurring Transaction: `add ... rec/FREQUENCY`](#adding-a-recurring-transaction-add--recfrequency)
+    - [Listing Recurring Transactions: `list-rec`](#listing-recurring-transactions-list-rec)
+    - [Deleting a Recurring Transaction: `delete-rec`](#deleting-a-recurring-transaction-delete-rec)
+    - [Generating Recurring Transactions: `gen-rec`](#generating-recurring-transactions-gen-rec)
     - [Filtering Transactions: `filter`](#filtering-transactions-filter)
     - [Exporting to CSV: `export-csv`](#exporting-to-csv-export-csv)
     - [Exporting Data File: `export-data`](#exporting-data-file-export-data)
@@ -74,12 +78,19 @@ Adds an expense by the given category, amount, optional description and optional
 > [!NOTE]
 > If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
 
-### Adding an Income: `add [income-category]`
-(// add description here)
+---
 
-**Format**:
+### Adding an Income: `add [income-category]`
+Adds an income transaction to your list.
+
+**Format**: `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
+**Valid income categories**: `salary`, `freelance`, `investment`, `business`, `gift`, `misc`
 
 **Examples**:
+- `add salary/500 desc/allowance d/2026-03-01` Adds a salary income of $500.00 described as *"allowance"* on 1st March 2026.
+- `add freelance/150` Adds a freelance income of $150.00 with today's date and no description.
+
+> [!NOTE] If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
 
 ---
 
@@ -92,7 +103,7 @@ Displays all recorded transactions in a numbered list.
 - `list` Displays all transactions currently stored in the application.
 
 > [!NOTE]
-> If there are no transactions recorded, the application will show an empty-list message instead.
+> If there are no transactions recorded, the application will show an empty list message instead.
 ---
 
 ### Finding a Transaction: `find`
@@ -168,9 +179,6 @@ All fields must be provided — the edit replaces the entire transaction, not in
 > [!NOTE]
 > Use `list` first to confirm the index of the transaction you want to edit. The edit can be reversed with `undo`.
 
-**Format**:
-
-**Examples**:
 ---
 
 ### Undoing an Action: `undo`
@@ -228,14 +236,68 @@ The statistics include:
 - spending trend
 - budget usage percentage
 
-**Format**:
-- `stats`
+**Format**: `stats`
 
 **Examples**:
 - `stats` Displays the full statistics summary for all recorded transactions.
 
 > [!NOTE]
 > General statistics are based on all recorded transactions, while budget usage is based on the current month's expenses.
+---
+
+### Adding a Recurring Transaction: `add ... rec/FREQUENCY`
+Creates a recurring transaction template. MoneyBagProMax will automatically generate the corresponding expense or income entries on startup and when you run `gen-rec`, covering all due dates since the last generation.
+
+**Format**: `add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD] rec/FREQUENCY`
+
+- `FREQUENCY` must be one of: `daily`, `weekly`, `monthly` (case-insensitive)
+- `d/YYYY-MM-DD` sets the start date; defaults to today if omitted
+- The category determines whether the entry is an expense or income (same valid categories as `add`)
+> [!NOTE]
+> For valid expense and income categories, see [Adding an Expense](#adding-an-expense-add-expense-category) and [Adding an Income](#adding-an-income-add-income-category).
+
+**Examples**:
+- `add food/10 desc/lunch rec/daily` — Creates a daily $10 lunch expense template starting today.
+- `add salary/3000 desc/monthly-pay d/2026-04-01 rec/monthly` — Creates a monthly $3000 income template starting 2026-04-01.
+
+---
+
+### Listing Recurring Transactions: `list-rec`
+Displays all stored recurring transaction templates with their index, frequency, amount, category, description, and start date.
+
+**Format**: `list-rec`
+
+**Examples**:
+- `list-rec` — Lists all recurring transaction templates currently stored.
+
+> [!NOTE]
+> If no recurring templates exist, the application will show an empty-list message.
+
+---
+
+### Deleting a Recurring Transaction: `delete-rec`
+Removes a recurring transaction template by its index shown in `list-rec`. This does not affect transactions that have already been generated from the template.
+
+**Format**: `delete-rec INDEX`
+
+- `INDEX` is the 1-based index from `list-rec`
+
+**Examples**:
+- `delete-rec 2` — Deletes the second recurring template in the list.
+
+---
+
+### Generating Recurring Transactions: `gen-rec`
+Generates all pending transaction entries for every recurring template, up to today's date. Skips any dates that have already been generated to prevent duplicates. Recurring transactions are also generated automatically each time the application starts.
+
+**Format**: `gen-rec`
+
+**Examples**:
+- `gen-rec` — Generates all due recurring transactions for all templates.
+
+> [!NOTE]
+> If all templates are up-to-date, no new transactions are added.
+
 ---
 
 ### Filtering Transactions: `filter`
@@ -281,11 +343,12 @@ Copies the internal data file to a location of your choice. Useful for backing u
 ---
 
 ### Exiting the Application: `exit`
-(// add description here)
+Exits the MoneyBagProMax application.
 
-**Format**:
+**Format**: `exit`
 
 **Examples**:
+- `exit` Closes the application.
 
 ---
 
@@ -300,9 +363,11 @@ Then, overwrite the generated data/transactions.txt file with the one from your 
 
 ## Editing the Data File
 
-MoneyBagProMax automatically saves your task data in a text file located at `./data/transactions.txt`, relative to the directory where you run the program.
+MoneyBagProMax automatically saves your transaction data in two text files, both located in the `./data/` directory relative to where you run the program:
+- `transactions.txt` — stores all recorded income and expense entries.
+- `recurring.txt` — stores your recurring transaction templates (created with `add ... rec/FREQUENCY`).
 
-> ⚠️**Caution:** Be cautious when editing the file directly, as there are guards against file corruption and improper formatting. Failure to pass these checks may cause errors or data loss when the application is next launched.
+> ⚠️**Caution:** Be cautious when editing either file directly, as there are guards against file corruption and improper formatting. Failure to pass these checks may cause errors or data loss when the application is next launched.
 
 ---
 
@@ -323,6 +388,10 @@ MoneyBagProMax automatically saves your task data in a text file located at `./d
 | **Budget Set**  | `budget set AMOUNT`                                                 | `budget set 1000`                              |
 | **Budget Status** | `budget status`                                                   | —                                              |
 | **Stats**       | `stats`                                                             | —                                              |
+| **Add Recurring**      | `add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD] rec/FREQUENCY` | `add food/10 desc/lunch rec/daily`  |
+| **List Recurring**     | `list-rec`                                                              | —                                   |
+| **Delete Recurring**   | `delete-rec INDEX`                                                      | `delete-rec 2`                      |
+| **Generate Recurring** | `gen-rec`                                                               | —                                   |
 | **Filter**      | `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`                         | `filter from/2026-01-01 to/2026-03-31`         |
 | **Export CSV**  | `export-csv FILEPATH`                                               | `export-csv ~/transactions.csv`                |
 | **Export Data** | `export-data FILEPATH`                                              | `export-data ~/backup/transactions.txt`         |
