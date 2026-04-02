@@ -1,9 +1,13 @@
 package seedu.duke.storage;
 
 import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.category.CategoryManager;
 import seedu.duke.transaction.Expense;
+import seedu.duke.transaction.Frequency;
 import seedu.duke.transaction.Income;
+import seedu.duke.transaction.RecurringTransaction;
 import seedu.duke.transaction.Transaction;
+import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
 
 import java.io.IOException;
@@ -17,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -25,10 +31,17 @@ import java.util.Map;
  */
 public class Storage {
 
+    private static final Logger logger = Logger.getLogger(Storage.class.getName());
+    static {
+        logger.setLevel(Level.WARNING);
+    }
+
     private static final String DATA_DIR = "data";
     private static final String DATA_FILE = "data/transactions.txt";
+    private static final String REC_FILE = "data/recurring.txt";
 
     private static final String TXN_PREFIX = "[TXN]";
+    private static final String REC_PREFIX = "[REC]";
     private static final String FIELD_SEP = " | ";
     private static final String KV_SEP = "=";
 
@@ -94,7 +107,7 @@ public class Storage {
             }
             Map<String, String> f = parseLine(line);
             if (f == null) {
-                System.out.println("[WARN] Skipping malformed line (could not parse): " + line);
+                logger.warning("Skipping malformed line (could not parse): " + line);
                 continue;
             }
             try {
@@ -103,7 +116,7 @@ public class Storage {
                     list.add(t);
                 }
             } catch (CorruptedEntryException e) {
-                System.out.println("[WARN] Skipping corrupted entry: " + e.getMessage());
+                logger.warning("Skipping corrupted entry: " + e.getMessage());
             }
         }
     }
@@ -310,6 +323,118 @@ public class Storage {
                                                     "amount" + KV_SEP + t.getAmount(),
                                                     "description" + KV_SEP + t.getDescription(),
                                                     "date" + KV_SEP + t.getDate()
+        );
+    }
+
+    /**
+     * Populates the recurring transaction list from disk. Call once on app startup.
+     *
+     * @param list RecurringTransactionList, required — the list to load templates into.
+     * @throws MoneyBagProMaxException if the file cannot be read.
+     */
+    public void loadRecurring(RecurringTransactionList list) throws MoneyBagProMaxException {
+        assert list != null : "RecurringTransactionList should not be null";
+        try {
+            Files.createDirectories(Paths.get(DATA_DIR));
+            Path p = Paths.get(REC_FILE);
+            if (!Files.exists(p)) {
+                Files.createFile(p);
+                return;
+            }
+            list.clear();
+            for (String line : Files.readAllLines(p)) {
+                if (!line.startsWith(REC_PREFIX)) {
+                    continue;
+                }
+                try {
+                    Map<String, String> f = parseRecurringLine(line);
+                    String category    = f.get("category");
+                    String amountStr   = f.get("amount");
+                    String description = f.getOrDefault("description", "");
+                    String freqStr     = f.get("frequency");
+                    String startStr    = f.get("startDate");
+                    String lastStr     = f.get("lastGeneratedDate");
+                    if (category == null || amountStr == null || freqStr == null || startStr == null) {
+                        continue;
+                    }
+                    boolean knownCategory = Income.VALID_CATEGORIES.contains(category.toLowerCase())
+                            || Expense.VALID_CATEGORIES.contains(category.toLowerCase())
+                            || CategoryManager.getInstance().getCustomCategories().contains(category.toLowerCase());
+                    if (!knownCategory) {
+                        logger.warning("Skipping recurring line with invalid category '"
+                                + category + "': " + line);
+                        continue;
+                    }
+                    double amount      = Double.parseDouble(amountStr);
+                    if (amount <= 0) {
+                        logger.warning("Skipping recurring line with non-positive amount: " + line);
+                        continue;
+                    }
+                    Frequency freq     = Frequency.fromString(freqStr);
+                    LocalDate start    = LocalDate.parse(startStr);
+                    RecurringTransaction rt = new RecurringTransaction(category, amount, description, freq, start);
+                    if (lastStr != null && !lastStr.equals("null")) {
+                        rt.setLastGeneratedDate(LocalDate.parse(lastStr));
+                    }
+                    list.add(rt);
+                } catch (Exception e) {
+                    logger.warning("Skipping malformed recurring line '" + line + "': " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            throw new MoneyBagProMaxException("Failed to load recurring data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Atomically writes the recurring transaction list to disk.
+     *
+     * @param list RecurringTransactionList, required — the list to save.
+     * @throws MoneyBagProMaxException if the file cannot be written.
+     */
+    public void saveRecurring(RecurringTransactionList list) throws MoneyBagProMaxException {
+        assert list != null : "RecurringTransactionList should not be null";
+        try {
+            Files.createDirectories(Paths.get(DATA_DIR));
+            List<String> lines = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                lines.add(serializeRecurringLine(list.get(i)));
+            }
+            Path target = Paths.get(REC_FILE);
+            Path tmp    = Paths.get(REC_FILE + ".tmp");
+            Files.write(tmp, lines);
+            Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new MoneyBagProMaxException("Failed to save recurring data: " + e.getMessage());
+        }
+    }
+
+    private Map<String, String> parseRecurringLine(String line) {
+        assert line != null : "Line should not be null";
+        Map<String, String> fields = new LinkedHashMap<>();
+        String[] parts = line.split("\\s*\\|\\s*");
+        for (int i = 1; i < parts.length; i++) {
+            int eq = parts[i].indexOf(KV_SEP);
+            if (eq < 0) {
+                continue;
+            }
+            fields.put(parts[i].substring(0, eq).trim(),
+                       parts[i].substring(eq + 1).trim());
+        }
+        return fields;
+    }
+
+    private String serializeRecurringLine(RecurringTransaction rt) {
+        assert rt != null : "RecurringTransaction should not be null";
+        String lastGenerated = rt.getLastGeneratedDate() == null ? "null"
+                : rt.getLastGeneratedDate().toString();
+        return REC_PREFIX + FIELD_SEP + String.join(FIELD_SEP,
+                "category"          + KV_SEP + rt.getCategory(),
+                "amount"            + KV_SEP + rt.getAmount(),
+                "description"       + KV_SEP + rt.getDescription(),
+                "frequency"         + KV_SEP + rt.getFrequency().name(),
+                "startDate"         + KV_SEP + rt.getStartDate(),
+                "lastGeneratedDate" + KV_SEP + lastGenerated
         );
     }
 
