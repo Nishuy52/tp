@@ -1,0 +1,50 @@
+@startuml
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 5
+
+actor User
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":GenerateRecurringCommand" as GenRec
+participant ":RecurringTransactionList" as RecList
+participant ":RecurringTransaction" as RT
+participant ":TransactionList" as TList
+
+User -> Ui : enter "gen-rec"
+Ui -> Parser : parse("gen-rec")
+Parser --> Ui : GenerateRecurringCommand
+
+Ui -> GenRec : execute(list, budget, ui)
+activate GenRec
+
+loop for each template in recurringList
+    GenRec -> RecList : get(i)
+    RecList --> GenRec : rt
+
+    GenRec -> GenRec : getNextDate(rt)
+    note right of GenRec : Returns startDate if lastGeneratedDate\nis null, else frequency.next(lastGeneratedDate)
+    GenRec --> GenRec : nextDate
+
+    loop while nextDate <= today
+        GenRec -> GenRec : createTransaction(rt, nextDate)
+        note right of GenRec : Creates Income or Expense\nbased on rt.isIncome()
+        GenRec --> GenRec : t : Transaction
+
+        GenRec -> TList : add(t)
+
+        GenRec -> RT : setLastGeneratedDate(nextDate)
+
+        GenRec -> GenRec : nextDate = frequency.next(nextDate)
+    end
+
+    opt templateCount > 0
+        GenRec -> Ui : showMessage("Generated N transaction(s) from: ...")
+    end
+end
+
+opt no transactions generated and list not empty
+    GenRec -> Ui : showMessage("No recurring transactions are due.")
+end
+
+deactivate GenRec
+@enduml

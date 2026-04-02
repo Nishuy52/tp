@@ -1,0 +1,24 @@
+@startuml
+actor User
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":AddRecurringCommand" as AddRec
+participant ":RecurringTransactionList" as RecList
+
+User -> Ui : enter "add food/10 desc/lunch rec/daily"
+Ui -> Parser : parse("add food/10 desc/lunch rec/daily")
+Parser -> Parser : parseAddCommand("food/10 desc/lunch rec/daily")
+note right of Parser : Detects rec/ suffix,\nextracts frequency "daily"
+Parser --> Ui : AddRecurringCommand
+
+Ui -> AddRec : execute(list, budget, ui)
+
+alt invalid category
+    AddRec -> Ui : showMessage("Invalid category ...")
+else valid category
+    create ":RecurringTransaction" as RT
+    AddRec -> RT : <<create>>(category, amount, description, frequency, startDate)
+    AddRec -> RecList : add(rt)
+    AddRec -> Ui : showMessage("Added recurring: ...")
+end
+@enduml

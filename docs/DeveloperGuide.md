@@ -535,6 +535,9 @@ repeatedly, the user creates a template once; MoneyBagProMax then generates the 
 The four commands are: `add ... rec/FREQUENCY` (create template), `list-rec` (view templates),
 `delete-rec INDEX` (remove template), and `gen-rec` (trigger generation manually).
 
+### Class Diagram
+![Recurring Class Diagram](diagrams/RecurringClassDiagram.png)
+
 ### Architecture and Flow
 
 The feature adds two new packages alongside the existing ones:
@@ -580,6 +583,12 @@ A thin wrapper around `ArrayList<RecurringTransaction>` with the same interface 
 level, matching the convention used by `TransactionList`.
 
 #### Commands
+
+##### Sequence Diagram — add ... rec/FREQUENCY
+![Add Recurring Sequence Diagram](diagrams/AddRecurringSequenceDiagram.png)
+
+##### Sequence Diagram — gen-rec
+![Generate Recurring Sequence Diagram](diagrams/GenerateRecurringSequenceDiagram.png)
 
 **AddRecurringCommand** validates the category against `Income.VALID_CATEGORIES`,
 `Expense.VALID_CATEGORIES`, and any custom categories managed by `CategoryManager`. If valid,
