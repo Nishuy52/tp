@@ -1,0 +1,46 @@
+@startuml
+skinparam style strictuml
+
+actor User
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":StatsCommand" as StatsCommand
+participant ":TransactionList" as TransactionList
+participant ":Budget" as Budget
+
+User -> Ui : enter "stats"
+Ui -> Parser : parse("stats")
+Parser --> Ui : StatsCommand
+Ui -> StatsCommand : execute(list, budget, ui)
+
+StatsCommand -> TransactionList : getTotalIncome()
+TransactionList --> StatsCommand : totalIncome
+StatsCommand -> TransactionList : getTotalExpenses()
+TransactionList --> StatsCommand : totalExpense
+StatsCommand -> TransactionList : getHighestExpense()
+TransactionList --> StatsCommand : highestExpense
+StatsCommand -> TransactionList : getLowestExpense()
+TransactionList --> StatsCommand : lowestExpense
+StatsCommand -> TransactionList : getHighestIncome()
+TransactionList --> StatsCommand : highestIncome
+StatsCommand -> TransactionList : getMostFrequentCategory()
+TransactionList --> StatsCommand : mostFrequentCategory
+StatsCommand -> TransactionList : getAverageSpendingPerCategory()
+TransactionList --> StatsCommand : averageMap
+StatsCommand -> TransactionList : getSpendingTrend()
+TransactionList --> StatsCommand : trend
+
+alt budget set
+    StatsCommand -> Budget : hasBudget()
+    Budget --> StatsCommand : true
+    StatsCommand -> TransactionList : getTotalExpensesForMonth(...)
+    TransactionList --> StatsCommand : spentThisMonth
+    StatsCommand -> Budget : calculatePercentageUsed(spentThisMonth)
+    Budget --> StatsCommand : budgetUsed
+else no budget
+    StatsCommand -> Budget : hasBudget()
+    Budget --> StatsCommand : false
+end
+
+StatsCommand -> Ui : showMessage(...)
+@enduml

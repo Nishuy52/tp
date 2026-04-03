@@ -716,6 +716,171 @@ materialised when the user opens the app, without requiring a manual `gen-rec` c
 
 ---
 
+## Budget Feature
+
+### Overview
+The budget feature allows the user to set a monthly budget and monitor current-month spending against that budget.
+
+The feature supports two commands:
+- budget set AMOUNT
+- budget status
+
+budget set stores the monthly budget amount, while budget status displays the monthly budget, total expenses for the current month, the remaining budget, and the percentage of the budget used.
+
+### Implementation
+The budget feature is implemented using a dedicated Budget model class together with BudgetCommand.
+
+The main classes involved are:
+- Parser: parses user input and returns a BudgetCommand
+- BudgetCommand: executes budget-related logic
+- Budget: stores the monthly budget value and provides helper calculations
+- TransactionList: provides the total expense for the current month
+- Ui: displays the result to the user
+
+When the user enters a budget command, the Parser creates a BudgetCommand object.  
+During execution, BudgetCommand interacts with both Budget and TransactionList, then sends the formatted result to Ui.
+
+The current implementation treats budget tracking as a monthly feature.  
+As a result, budget status calculates spending using only expense transactions whose date falls within the current month.
+
+### Sequence Diagram for budget set
+![Budget Set Sequence Diagram](diagrams/BudgetSetSequenceDiagram.png)
+
+### Sequence Diagram for budget status
+![Budget Status Sequence Diagram](diagrams/BudgetStatusSequenceDiagram.png)
+
+### Sequence Diagram Explanation
+When the user enters budget set AMOUNT, the input is first read by Ui and passed to the Parser.  
+The Parser returns a BudgetCommand object.  
+The Ui then invokes the command’s execute(...) method.  
+BudgetCommand updates the Budget object by storing the given monthly budget value.  
+Finally, Ui displays a confirmation message.
+
+When the user enters budget status, Parser again returns a BudgetCommand object.  
+During execution, BudgetCommand first checks whether a budget has been set.  
+If not, the user is informed that no monthly budget exists.  
+Otherwise, BudgetCommand requests the current month’s total expenses from TransactionList.  
+It then uses helper methods in Budget to calculate the remaining budget and percentage used before passing the result to Ui.
+
+### Design Considerations
+
+#### Aspect: Where to store budget data
+- Option 1 (Chosen): Store budget information in a separate Budget class.
+- Option 2: Store budget information directly inside TransactionList.
+
+Option 1 was chosen because it follows the Single Responsibility Principle more closely.  
+TransactionList is responsible for storing and processing transactions, while Budget is responsible for budget-related state and calculations.  
+This improves modularity and reduces coupling.
+
+#### Aspect: How to calculate budget usage
+- Option 1 (Chosen): Use only expense transactions from the current month.
+- Option 2: Use all expenses regardless of date.
+
+Option 1 was chosen because the feature is explicitly intended to represent a monthly budget.  
+Using all expenses would make the feature less realistic and less useful for users trying to monitor monthly spending.
+
+### Future Improvements
+Possible future enhancements include:
+- supporting separate budgets for different months
+- allowing the user to specify the month in budget status
+- automatically warning the user when spending exceeds the monthly budget
+
+---
+
+## Statistics Feature
+
+### Overview
+The statistics feature allows the user to view financial analytics using the stats command.
+
+The command provides a summary of transaction behaviour, including:
+- total income
+- total expense
+- highest expense
+- lowest expense
+- highest income
+- most frequent expense category
+- average spending per category
+- spending trend
+- budget usage percentage
+
+This feature helps users better understand their spending habits and overall financial behaviour.
+
+### Implementation
+The statistics feature is implemented mainly using StatsCommand together with helper methods in TransactionList.
+
+The main classes involved are:
+- Parser: parses the input and returns a StatsCommand
+- StatsCommand: coordinates the retrieval and display of statistics
+- TransactionList: computes all transaction-based statistics
+- Budget: provides budget usage calculation
+- Ui: displays the formatted statistics output
+
+StatsCommand does not perform raw calculations directly.  
+Instead, it requests the required values from TransactionList, which is responsible for managing transaction data.
+
+For example, TransactionList provides methods such as:
+- getTotalIncome()
+- getTotalExpenses()
+- getHighestExpense()
+- getLowestExpense()
+- getHighestIncome()
+- getMostFrequentCategory()
+- getAverageSpendingPerCategory()
+- getSpendingTrend()
+
+The implementation also uses HashMap to compute category frequency and average spending per category efficiently.
+
+To reduce duplication, a helper method was introduced to generalise the logic for finding extreme transactions (e.g. highest or lowest transactions of a certain type).  
+This improves maintainability and follows the DRY principle.
+
+### Sequence Diagram for stats
+![Stats Sequence Diagram](diagrams/StatsSequenceDiagram.png)
+
+### Class Diagram
+![Budget and Stats Class Diagram](diagrams/BudgetStatsClassDiagram.png)
+
+### Sequence Diagram Explanation
+When the user enters stats, the Ui reads the input and passes it to the Parser.  
+The Parser returns a StatsCommand object.  
+The Ui then invokes StatsCommand.execute(...).
+
+StatsCommand requests a series of values from TransactionList, including total income, total expense, highest expense, lowest expense, highest income, most frequent category, average spending per category, and spending trend.
+
+If a budget has been set, StatsCommand also retrieves the current month’s total expense from TransactionList and passes it to Budget to calculate the percentage of budget used.
+
+Finally, StatsCommand formats the information into a statistics summary and passes it to Ui for display.
+
+### Design Considerations
+
+#### Aspect: Where to compute statistics
+- Option 1 (Chosen): Place the statistics logic in TransactionList.
+- Option 2: Compute all statistics directly in StatsCommand.
+
+Option 1 was chosen because TransactionList already owns and manages the transaction data.  
+This keeps StatsCommand focused on command execution and presentation, while data-processing responsibilities remain within the transaction component.  
+This improves cohesion.
+
+#### Aspect: Data structure used for category-based statistics
+- Option 1 (Chosen): Use HashMap to track category frequency and totals.
+- Option 2: Use repeated nested loops.
+
+Option 1 was chosen because it is more efficient and easier to extend.  
+It also makes the code clearer for tasks such as finding the most frequent category and computing average spending per category.
+
+#### Aspect: Refactoring duplicated logic
+- Option 1 (Chosen): Extract common logic into a helper method.
+- Option 2: Keep separate loops for highest expense, lowest expense, and highest income.
+
+Option 1 was chosen because it reduces code duplication and improves maintainability.  
+The helper method hides the repeated filtering and comparison logic while still exposing a clear public API through methods such as getHighestExpense() and getLowestExpense().
+
+### Future Improvements
+Possible future enhancements include:
+- adding category-specific statistics such as stats CATEGORY
+- allowing users to request statistics for a specified month
+- comparing statistics across months
+- presenting more detailed trend analysis
+
 ## Product scope
 ### Target user profile
 

@@ -1,0 +1,17 @@
+@startuml
+skinparam style strictuml
+
+actor User
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":BudgetCommand" as BudgetCommand
+participant ":Budget" as Budget
+
+User -> Ui : enter "budget set 1000"
+Ui -> Parser : parse("budget set 1000")
+Parser --> Ui : BudgetCommand
+Ui -> BudgetCommand : execute(list, budget, ui)
+BudgetCommand -> Budget : setMonthlyBudget(1000)
+Budget --> BudgetCommand
+BudgetCommand -> Ui : showMessage("Monthly budget set to $1000.00")
+@enduml

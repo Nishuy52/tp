@@ -1,0 +1,33 @@
+@startuml
+skinparam style strictuml
+
+actor User
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":BudgetCommand" as BudgetCommand
+participant ":TransactionList" as TransactionList
+participant ":Budget" as Budget
+
+User -> Ui : enter "budget status"
+Ui -> Parser : parse("budget status")
+Parser --> Ui : BudgetCommand
+Ui -> BudgetCommand : execute(list, budget, ui)
+
+BudgetCommand -> Budget : hasBudget()
+
+alt no budget set
+    Budget --> BudgetCommand : false
+    BudgetCommand -> Ui : showMessage("No monthly budget set.")
+else budget exists
+    Budget --> BudgetCommand : true
+    BudgetCommand -> TransactionList : getTotalExpensesForMonth(...)
+    TransactionList --> BudgetCommand : spentThisMonth
+    BudgetCommand -> Budget : getMonthlyBudget()
+    Budget --> BudgetCommand : monthlyBudget
+    BudgetCommand -> Budget : calculateRemaining(spentThisMonth)
+    Budget --> BudgetCommand : remaining
+    BudgetCommand -> Budget : calculatePercentageUsed(spentThisMonth)
+    Budget --> BudgetCommand : percentUsed
+    BudgetCommand -> Ui : showMessage(...)
+end
+@enduml

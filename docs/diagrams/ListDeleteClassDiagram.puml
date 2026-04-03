@@ -1,40 +1,41 @@
 @startuml
+hide circle
+skinparam classAttributeIconSize 0
+
 class Parser {
-    +parse(input) : Command
+  +parse(input) : Command
 }
 
-abstract class Command {
-    +execute(list, ui)
+class "{abstract}\nCommand" as Command {
+  +execute(list, ui)
 }
 
 class ListCommand {
-    +execute(list, ui)
+  +execute(list, ui)
 }
 
 class DeleteCommand {
-    -index : int
-    +execute(list, ui)
+  -index : int
+  +execute(list, ui)
 }
 
 class TransactionList {
-    +add(t)
-    +get(i) : Transaction
-    +remove(i) : Transaction
-    +size() : int
-    +isEmpty() : boolean
+  +add(t)
+  +get(i) : Transaction
+  +remove(i) : Transaction
+  +size() : int
+  +isEmpty() : boolean
 }
 
-class Transaction
 class Ui {
-    +readInput()
-    +showMessage(message)
+  +readInput()
+  +showMessage(message)
 }
 
+Parser --> Command
 Command <|-- ListCommand
 Command <|-- DeleteCommand
-Parser --> Command
-Command --> Ui
 ListCommand --> TransactionList
 DeleteCommand --> TransactionList
-TransactionList --> Transaction
+Command --> Ui
 @enduml
