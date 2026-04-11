@@ -123,7 +123,19 @@ Enter a command: ============================================================
                  - Generates all due recurring transactions up to today.
 17. Filter     : `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`
                  - Filters your transactions based on the time frame given
-18. Exit       : `exit`
+18. Category   : `category add/NAME` or `category remove/NAME` or `category list`
+                 - Manages custom expense categories.
+                 - `category add/NAME` adds a new custom category.
+                 - `category remove/NAME` removes a custom category.
+                 - `category list` lists all available categories.
+                 - Example: category add/groceries
+19. Export CSV : `export-csv FILEPATH`
+                 - Exports all transactions to a .csv file.
+                 - Example: export-csv ~/transactions.csv
+20. Export Data: `export-data FILEPATH`
+                 - Copies the internal data file to a specified location.
+                 - Example: export-data ~/backup/transactions.txt
+21. Exit       : `exit`
                  - Exits the program.
 ============================================================
 
