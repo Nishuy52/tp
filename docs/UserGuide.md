@@ -40,7 +40,7 @@ respective system [here](https://www.oracle.com/java/technologies/javase/jdk17-a
 
 1. Download the latest MoneyBagProMax JAR file from the **GitHub Releases Page**.
 2. Copy the JAR file into the folder that you want to use as the home folder for the application.
-3. Locate your JAR file and copy the filepath. Example: `/Users/{yourName}/Desktop/downloads/expense-tracker.jar`
+3. Locate your JAR file and copy the filepath. Example: `/Users/{yourName}/Desktop/downloads/MoneyBagProMax.jar`
 4. Open the command line terminal:
     - *Windows*: Open Command Prompt
     - *macOS/Linux*: Open Terminal
