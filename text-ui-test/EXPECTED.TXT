@@ -94,7 +94,7 @@ Enter a command: ============================================================
                  - Same category/price/desc/date format as `add`.
                  - Example: edit 3 food/20 desc/dinner d/2026-03-20
 9. Undo        : `undo`
-                 - Reverses the last add or delete action.
+                 - Reverses the last add, delete, or edit action.
 10. Redo        : `redo`
                  - Re-applies the last undone action.
 11. Budget     : `budget set [AMOUNT]` or `budget status`
