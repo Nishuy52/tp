@@ -387,7 +387,7 @@ Then, overwrite the generated data/transactions.txt file with the one from your 
 
 ## Editing the Data File
 
-MoneyBagProMax automatically saves your transaction data in two text files, both located in the `./data/` directory relative to where you run the program:
+MoneyBagProMax automatically saves your transaction data in three text files, both located in the `./data/` directory relative to where you run the program:
 - `transactions.txt` — stores all recorded income and expense entries.
 - `categories.txt` — stores your custom expense categories (created with `category add/NAME`).
 - `recurring.txt` — stores your recurring transaction templates (created with `add ... rec/FREQUENCY`).
