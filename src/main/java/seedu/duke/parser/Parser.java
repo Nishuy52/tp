@@ -271,8 +271,8 @@ public class Parser {
             }
             try {
                 double amount = Double.parseDouble(parts[1].trim());
-                if (amount < 0) {
-                    throw new MoneyBagProMaxException("Budget cannot be negative.");
+                if (amount <= 0) {
+                    throw new MoneyBagProMaxException("Budget must be greater than 0.");
                 }
                 return new BudgetCommand("set", amount);
             } catch (NumberFormatException e) {
