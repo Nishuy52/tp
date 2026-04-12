@@ -85,6 +85,7 @@ public class EditCommand extends Command {
                 + "\n  After:  " + newTransaction);
     }
 
+    /** @return boolean — always true, this command modifies the transaction list. */
     @Override
     public boolean isMutating() {
         return true;
