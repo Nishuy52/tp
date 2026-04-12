@@ -33,11 +33,11 @@ public class MoneyBagProMax {
         Storage storage = new Storage();
         Budget budget = new Budget();
         CategoryManager.getInstance().load();
-        storage.load(list, budget);
+        Ui ui = new Ui();
+        storage.load(list, budget, ui);
         storage.loadRecurring(recurringList);
         UndoRedoManager undoRedoManager = new UndoRedoManager();
         Parser parser = new Parser(undoRedoManager, recurringList);
-        Ui ui = new Ui();
         logger.info("Core components: TransactionList, Parser, UndoRedoManager and Ui initialised successfully.");
         ui.showWelcomeMessage();
         try {

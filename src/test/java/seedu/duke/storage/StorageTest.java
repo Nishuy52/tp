@@ -11,6 +11,7 @@ import seedu.duke.transaction.Income;
 import seedu.duke.transaction.RecurringTransaction;
 import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ class StorageTest {
     private Storage storage;
     private TransactionList list;
     private Budget budget;
+    private final Ui ui = new Ui();
 
     @BeforeEach
     void setUp() {
@@ -49,7 +51,7 @@ class StorageTest {
 
     @Test
     void load_noFileExists_createsEmptyFile() throws MoneyBagProMaxException {
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertTrue(Files.exists(Paths.get(DATA_FILE)));
         assertEquals(0, list.size());
     }
@@ -58,7 +60,7 @@ class StorageTest {
     void load_emptyFile_listRemainsEmpty() throws MoneyBagProMaxException, IOException {
         Files.createDirectories(Paths.get("data"));
         Files.createFile(Paths.get(DATA_FILE));
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -70,7 +72,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(1, loaded.size());
         assertEquals("food", loaded.get(0).getCategory());
@@ -88,7 +90,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(1, loaded.size());
         assertEquals("salary", loaded.get(0).getCategory());
@@ -108,7 +110,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(3, loaded.size());
     }
@@ -119,7 +121,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=INVALID | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -129,7 +131,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=transfer | category=misc | amount=50.0 | description= | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -139,7 +141,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(1, list.size());
         assertEquals("", list.get(0).getDescription());
     }
@@ -163,7 +165,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
         assertEquals(1, loaded.size());
         assertEquals("transport", loaded.get(0).getCategory());
     }
@@ -181,7 +183,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
         assertEquals(1, loaded.size());
         assertEquals("income", loaded.get(0).getType());
     }
@@ -194,7 +196,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals("", loaded.get(0).getDescription());
         assertEquals(5.0, loaded.get(0).getAmount());
@@ -209,7 +211,7 @@ class StorageTest {
                                   + "[TXN] | type=expense | category=food | amount=10.0"
                                   + " | description=lunch | date=2026-03-23\n"
                                   + "some random line\n");
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(1, list.size());
     }
 
@@ -225,7 +227,7 @@ class StorageTest {
         Budget newBudget = new Budget();
         loaded.add(new Expense("misc", 99.0, "stale", 
                                LocalDate.of(2026, 1, 1)));
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(2, loaded.size());
     }
@@ -242,7 +244,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals("food", loaded.get(0).getCategory());
         assertEquals("salary", loaded.get(1).getCategory());
@@ -340,7 +342,7 @@ class StorageTest {
                           "[TXN] | type=expense | category=food | amount=-10.0"
                                   + " | description=lunch | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -350,7 +352,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=0.0 | description=lunch | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -360,7 +362,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | description=lunch | date=23-03-2026\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -370,7 +372,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | description=lunch | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -380,7 +382,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | description=lunch\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -390,7 +392,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | amount=10.0 | description=lunch | date=2026-03-23\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(0, list.size());
     }
 
@@ -405,7 +407,7 @@ class StorageTest {
                                   + "[TXN] | type=income | category=salary | amount=3000.0"
                                   + " | description=pay | date=2026-03-01\n");
 
-        storage.load(list, budget);
+        storage.load(list, budget, ui);
         assertEquals(2, list.size());
         assertEquals("food", list.get(0).getCategory());
         assertEquals("salary", list.get(1).getCategory());
@@ -424,7 +426,7 @@ class StorageTest {
         TransactionList loadedList = new TransactionList();
         Budget loadedBudget = new Budget();
 
-        storage.load(loadedList, loadedBudget);
+        storage.load(loadedList, loadedBudget, ui);
 
         assertEquals(500, loadedBudget.getMonthlyBudget());
     }
@@ -438,7 +440,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(1000, loaded.size());
     }
@@ -450,7 +452,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget newBudget = new Budget();
-        storage.load(loaded, newBudget);
+        storage.load(loaded, newBudget, ui);
 
         assertEquals(1, loaded.size());
     }
@@ -462,7 +464,7 @@ class StorageTest {
 
         TransactionList loaded = new TransactionList();
         Budget loadedBudget = new Budget();
-        storage.load(loaded, loadedBudget);
+        storage.load(loaded, loadedBudget, ui);
 
         assertEquals(0, loadedBudget.getMonthlyBudget());
     }

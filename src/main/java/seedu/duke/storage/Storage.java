@@ -10,6 +10,7 @@ import seedu.duke.transaction.RecurringTransaction;
 import seedu.duke.transaction.Transaction;
 import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,10 +55,12 @@ public class Storage {
     /**
      * Populates the transaction list from disk. Call once on app startup.
      *
-     * @param list TransactionList, required — the list to load transactions into.
+     * @param list   TransactionList, required — the list to load transactions into.
+     * @param budget Budget, required — the budget to load from disk.
+     * @param ui     Ui, required — used to display warnings for corrupted entries.
      * @throws MoneyBagProMaxException if the file cannot be read.
      */
-    public void load(TransactionList list, Budget budget) throws MoneyBagProMaxException {
+    public void load(TransactionList list, Budget budget, Ui ui) throws MoneyBagProMaxException {
         assert list != null : "TransactionList should not be null";
         assert budget != null : "Budget should not be null";
 
@@ -66,7 +69,18 @@ public class Storage {
                 return;
             }
             clearList(list);
-            parseLines(list, budget, Files.readAllLines(Paths.get(DATA_FILE)));
+            List<String> corruptedLines = new ArrayList<>();
+            parseLines(list, budget, Files.readAllLines(Paths.get(DATA_FILE)), corruptedLines);
+            if (!corruptedLines.isEmpty()) {
+                StringBuilder warning = new StringBuilder();
+                warning.append("[WARNING] ").append(corruptedLines.size())
+                        .append(" corrupted transaction(s) were skipped on load:\n");
+                for (String line : corruptedLines) {
+                    warning.append("  - ").append(line).append("\n");
+                }
+                warning.append("Please check data/transactions.txt and correct or remove these entries.");
+                ui.showMessage(warning.toString());
+            }
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to load data: " + e.getMessage());
         }
@@ -103,10 +117,11 @@ public class Storage {
      * Parses each line from the file and adds valid transactions to the list.
      *
      * @param list   TransactionList, required — the list to populate.
-     * @param budget
+     * @param budget Budget, required — the budget to load from disk.
      * @param lines  List of raw lines read from the storage file.
      */
-    private void parseLines(TransactionList list, Budget budget, List<String> lines) {
+    private void parseLines(TransactionList list, Budget budget,
+                             List<String> lines, List<String> corruptedLines) {
         for (String line : lines) {
             if (line.startsWith(BUDGET_PREFIX)) {
                 Map<String, String> f = parseLine(line.replace(BUDGET_PREFIX, TXN_PREFIX));
@@ -126,6 +141,7 @@ public class Storage {
             Map<String, String> f = parseLine(line);
             if (f == null) {
                 logger.warning("Skipping malformed line (could not parse): " + line);
+                corruptedLines.add(line);
                 continue;
             }
             try {
@@ -135,6 +151,7 @@ public class Storage {
                 }
             } catch (CorruptedEntryException e) {
                 logger.warning("Skipping corrupted entry: " + e.getMessage());
+                corruptedLines.add(line);
             }
         }
     }
@@ -303,6 +320,7 @@ public class Storage {
      * Atomically writes the transaction list to disk. Call after every mutating command.
      *
      * @param list TransactionList, required — the list to save.
+     * @param budget Budget, required — the budget to load from disk.
      * @throws MoneyBagProMaxException if the file cannot be written.
      */
     public void save(TransactionList list, Budget budget) throws MoneyBagProMaxException {
@@ -432,17 +450,7 @@ public class Storage {
 
     private Map<String, String> parseRecurringLine(String line) {
         assert line != null : "Line should not be null";
-        Map<String, String> fields = new LinkedHashMap<>();
-        String[] parts = line.split("\\s*\\|\\s*");
-        for (int i = 1; i < parts.length; i++) {
-            int eq = parts[i].indexOf(KV_SEP);
-            if (eq < 0) {
-                continue;
-            }
-            fields.put(parts[i].substring(0, eq).trim(),
-                       parts[i].substring(eq + 1).trim());
-        }
-        return fields;
+        return parseLine(line.replace(REC_PREFIX, TXN_PREFIX));
     }
 
     private String serializeRecurringLine(RecurringTransaction rt) {
