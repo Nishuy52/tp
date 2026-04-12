@@ -63,6 +63,7 @@ public class Storage {
     public void load(TransactionList list, Budget budget, Ui ui) throws MoneyBagProMaxException {
         assert list != null : "TransactionList should not be null";
         assert budget != null : "Budget should not be null";
+        assert ui != null : "Ui should not be null";
 
         try {
             if (!initialiseFile()) {
