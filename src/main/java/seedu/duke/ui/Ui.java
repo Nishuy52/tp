@@ -61,9 +61,9 @@ public class Ui {
                 8. Edit        : `edit [INDEX] [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
                                  - Replaces a transaction at INDEX with the new values.
                                  - Same category/price/desc/date format as `add`.
-                                 - Example: edit 3 food/20 desc/dinner d/2026-03-20                 
+                                 - Example: edit 3 food/20 desc/dinner d/2026-03-20
                 9. Undo        : `undo`
-                                 - Reverses the last add or delete action.
+                                 - Reverses the last add, delete, or edit action.
                 10. Redo        : `redo`
                                  - Re-applies the last undone action.
                 11. Budget     : `budget set [AMOUNT]` or `budget status`
@@ -92,9 +92,21 @@ public class Ui {
                                  - Generates all due recurring transactions up to today.
                 17. Filter     : `filter from/YYYY-MM-DD to/YYYY-MM-DD`
                                  - Filters your transactions based on the time frame given
-                18. Help       : `help`
+                18. Category   : `category add/NAME` or `category remove/NAME` or `category list`
+                                 - Manages custom expense categories.
+                                 - `category add/NAME` adds a new custom category.
+                                 - `category remove/NAME` removes a custom category.
+                                 - `category list` lists all available categories.
+                                 - Example: category add/groceries
+                19. Export CSV : `export-csv FILEPATH`
+                                 - Exports all transactions to a .csv file.
+                                 - Example: export-csv ~/transactions.csv
+                20. Export Data: `export-data FILEPATH`
+                                 - Copies the internal data file to a specified location.
+                                 - Example: export-data ~/backup/transactions.txt
+                21. Help       : `help`
                                  - Generates the help message into the terminal
-                19. Exit       : `exit`
+                22. Exit       : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
 
@@ -166,16 +178,16 @@ public class Ui {
     public static void printWelcomeBanner() {
         System.out.print(ANSI_BRIGHT_GREEN);
         System.out.print("""
-                    .___.        
-                   /     \\       
-                  |       |      
-                  `-.   .-`      
-                 /   \\ /   \\     
-                |   $$$$$   |    
-                |  $$$$$$$  |    
-                |   $$$$$   |    
-                 \\         /     
-                  `-------`      
+                    .___.
+                   /     \\
+                  |       |
+                  `-.   .-`
+                 /   \\ /   \\
+                |   $$$$$   |
+                |  $$$$$$$  |
+                |   $$$$$   |
+                 \\         /
+                  `-------`
             """);
         System.out.print(ANSI_RESET);
     }
