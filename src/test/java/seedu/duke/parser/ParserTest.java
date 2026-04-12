@@ -191,4 +191,16 @@ class ParserTest {
         Command command = parser.parse("sort  by/date");
         assertInstanceOf(SortCommand.class, command);
     }
+
+    @Test
+    public void parseBudgetCommand_exceedsMaximum_throwsException() {
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
+
+        MoneyBagProMaxException exception = assertThrows(
+                MoneyBagProMaxException.class,
+                () -> parser.parse("budget set 10000001")
+        );
+
+        assertTrue(exception.getMessage().contains("Budget must not exceed 10000000"));
+    }
 }

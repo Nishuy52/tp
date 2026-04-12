@@ -30,9 +30,16 @@ public class BudgetCommand extends Command {
             double remaining = budget.calculateRemaining(spent);
             double percent = budget.calculatePercentageUsed(spent);
 
+            String formattedRemaining;
+            if (remaining < 0) {
+                formattedRemaining = String.format("-$%.2f", Math.abs(remaining));
+            } else {
+                formattedRemaining = String.format("$%.2f", remaining);
+            }
+
             ui.showMessage(String.format("Monthly budget: $%.2f", budget.getMonthlyBudget()));
             ui.showMessage(String.format("Spent: $%.2f", spent));
-            ui.showMessage(String.format("Remaining: $%.2f", remaining));
+            ui.showMessage(String.format("Remaining: %s", formattedRemaining));
             ui.showMessage(buildProgressBar(percent));
         }
     }

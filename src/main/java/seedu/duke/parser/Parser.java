@@ -287,6 +287,7 @@ public class Parser {
         }
         String[] parts = args.split(" ", 2);
         String action = parts[0].trim().toLowerCase();
+
         if (action.equals("set")) {
             if (parts.length < 2) {
                 throw new MoneyBagProMaxException("Usage: budget set AMOUNT");
@@ -296,14 +297,19 @@ public class Parser {
                 if (amount <= 0) {
                     throw new MoneyBagProMaxException("Budget must be greater than 0.");
                 }
+                if (amount > 10000000) {
+                    throw new MoneyBagProMaxException("Budget must not exceed 10000000.");
+                }
                 return new BudgetCommand("set", amount);
             } catch (NumberFormatException e) {
                 throw new MoneyBagProMaxException("Invalid budget amount.");
             }
         }
+
         if (action.equals("status")) {
             return new BudgetCommand("status", 0);
         }
+
         throw new MoneyBagProMaxException("Unknown budget command.");
     }
 
