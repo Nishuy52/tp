@@ -610,7 +610,7 @@ It is invoked on startup to reload saved transactions, and after every mutating 
 
 ### Architecture and Flow
 The `Storage` class operates independently of the command pipeline and is called directly by the main application loop.
-On startup, `Storage.load()` reads the data file line by line, parses each transaction record, and populates the `TransactionList`.
+On startup, `Storage.load()` reads the data file line by line, parses each transaction record, and populates the `TransactionList`. It accepts a `Ui` instance to surface any warnings about corrupted entries directly to the terminal.
 After any command that modifies the list (add, delete, etc.), `Storage.save()` serializes the entire `TransactionList` back to disk atomically using a temporary file, replacing the previous file only once the write command succeeds.
 
 ### Sequence Diagram for Load
@@ -621,8 +621,7 @@ On startup, `load()` ensures the `data/` directory and `transactions.txt` file e
 It then reads all lines from the file, skipping any that do not begin with the `[TXN]` prefix.
 Each valid line is parsed by `parseLine()` into a key-value map of fields (`type`, `category`, `amount`, `description`, `date`).
 The appropriate `Transaction` subclass, either `Income` or `Expense`, is instantiated and added to the `TransactionList`.
-Malformed lines are skipped with a warning rather than halting the application, so a single corrupt entry does not prevent the rest of the data from loading.
-
+Malformed or corrupted lines are skipped rather than halting the application, so a single corrupt entry does not prevent the rest of the data from loading. If any entries are skipped, `load()` reports each corrupted line to the user via `Ui` on startup, so the user is informed and can manually correct or remove the affected entries in `data/transactions.txt`.
 ### Sequence Diagram for Save
 ![Storage Save Sequence Diagram](diagrams/StorageSaveSequenceDiagram.png)
 
