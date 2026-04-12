@@ -416,13 +416,36 @@ Then, copy all three data files from your previous computer into the `data/` fol
 
 ## Editing the Data File
 
-MoneyBagProMax automatically saves your transaction data in three text files, both located in the `./data/` directory relative to where you run the program:
+MoneyBagProMax automatically saves your transaction data in three text files, all located in the `./data/` directory relative to where you run the program:
 - `transactions.txt` — stores all recorded income and expense entries.
 - `categories.txt` — stores your custom expense categories (created with `category add/NAME`).
 - `recurring.txt` — stores your recurring transaction templates (created with `add ... rec/FREQUENCY`).
 
-> ⚠️**Caution:** Be cautious when editing either file directly, as there are guards against file corruption and improper formatting. Failure to pass these checks may cause errors or data loss when the application is next launched.
+> ⚠️ **Caution:** Be cautious when editing these files directly, as there are guards against file corruption and improper formatting. Failure to pass these checks may cause errors or data loss when the application is next launched.
 
+### File Formats
+
+**transactions.txt** — each line follows the format:
+`[TXN] | type=TYPE | category=CATEGORY | amount=AMOUNT | description=DESCRIPTION | date=YYYY-MM-DD`
+
+The budget is stored as: `[BUDGET] | amount=AMOUNT`
+
+Valid values: `type` must be `income` or `expense`; `amount` must be a positive number; `date` must be `YYYY-MM-DD`; `description` may be empty.
+
+Example lines:
+- `[BUDGET] | amount=1000.0`
+- `[TXN] | type=expense | category=food | amount=12.5 | description=lunch | date=2026-03-25`
+- `[TXN] | type=income | category=salary | amount=3000.0 | description=march pay | date=2026-03-01`
+
+**recurring.txt** — each line follows the format:
+`[REC] | category=CATEGORY | amount=AMOUNT | description=DESCRIPTION | frequency=FREQUENCY | startDate=YYYY-MM-DD | lastGeneratedDate=YYYY-MM-DD`
+
+Valid values: `frequency` must be `DAILY`, `WEEKLY`, or `MONTHLY`; use `null` for `lastGeneratedDate` if the template has never been generated.
+
+**categories.txt** — each custom category is stored as a plain lowercase string on its own line, e.g. `groceries` or `dining-out`.
+
+> [NOTE]
+> Lines that cannot be parsed are skipped and a warning is shown on the next launch. Lines not beginning with `[TXN]`, `[BUDGET]`, or `[REC]` are ignored.
 ---
 
 ## Command Summary
