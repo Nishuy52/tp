@@ -154,7 +154,7 @@ Displays transactions sorted by the specified criterion. The underlying list ord
 
 **Format**: `sort by/CRITERIA`
 
-**Valid criteria:**
+**Valid criteria (case-insensitive):**
 - `date` — ascending (earliest first)
 - `amount` — descending (largest first)
 - `category` — alphabetical A–Z (case-insensitive)
@@ -165,7 +165,7 @@ Displays transactions sorted by the specified criterion. The underlying list ord
 - `sort by/category` — shows all transactions sorted alphabetically by category.
 
 > [!NOTE]
-> Sort does not change the indices used by `delete` and `edit`. Use `list` to see the original insertion order.
+> The index shown next to each transaction in the sorted view is its **original list index** — the same number to use with `delete` and `edit`.
 
 ---
 

@@ -46,10 +46,10 @@ class SortCommandTest {
         Command command = new SortCommand("date");
         command.execute(list, budget, ui);
 
-        String expectedOutput = "Transactions sorted by date:" + System.lineSeparator()
-                + "1. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
-                + "2. [Expense] transport \"bus\" $5.00 (2026-03-15)" + System.lineSeparator()
-                + "3. [Expense] food \"lunch\" $10.50 (2026-03-16)" + System.lineSeparator();
+        String expectedOutput = "Transactions sorted by date (indices match delete/edit):" + System.lineSeparator()
+                + "2. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
+                + "3. [Expense] transport \"bus\" $5.00 (2026-03-15)" + System.lineSeparator()
+                + "1. [Expense] food \"lunch\" $10.50 (2026-03-16)" + System.lineSeparator();
 
         assertEquals(expectedOutput, outContent.toString());
     }
@@ -66,9 +66,9 @@ class SortCommandTest {
         Command command = new SortCommand("amount");
         command.execute(list, budget, ui);
 
-        String expectedOutput = "Transactions sorted by amount:" + System.lineSeparator()
-                + "1. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
-                + "2. [Expense] food \"lunch\" $10.50 (2026-03-14)" + System.lineSeparator()
+        String expectedOutput = "Transactions sorted by amount (indices match delete/edit):" + System.lineSeparator()
+                + "2. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
+                + "1. [Expense] food \"lunch\" $10.50 (2026-03-14)" + System.lineSeparator()
                 + "3. [Expense] transport \"bus\" $5.00 (2026-03-14)" + System.lineSeparator();
 
         assertEquals(expectedOutput, outContent.toString());
@@ -86,10 +86,10 @@ class SortCommandTest {
         Command command = new SortCommand("category");
         command.execute(list, budget, ui);
 
-        String expectedOutput = "Transactions sorted by category:" + System.lineSeparator()
-                + "1. [Expense] food \"lunch\" $10.50 (2026-03-14)" + System.lineSeparator()
-                + "2. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
-                + "3. [Expense] transport \"bus\" $5.00 (2026-03-14)" + System.lineSeparator();
+        String expectedOutput = "Transactions sorted by category (indices match delete/edit):" + System.lineSeparator()
+                + "2. [Expense] food \"lunch\" $10.50 (2026-03-14)" + System.lineSeparator()
+                + "3. [Income] salary \"pay\" $50.00 (2026-03-14)" + System.lineSeparator()
+                + "1. [Expense] transport \"bus\" $5.00 (2026-03-14)" + System.lineSeparator();
 
         assertEquals(expectedOutput, outContent.toString());
     }

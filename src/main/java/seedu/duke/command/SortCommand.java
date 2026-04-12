@@ -60,9 +60,9 @@ public class SortCommand extends Command {
         }
 
         List<Transaction> sorted = list.getSortedList(comparator);
-        ui.showMessage("Transactions sorted by " + sortBy + ":");
-        for (int i = 0; i < sorted.size(); i++) {
-            ui.showMessage((i + 1) + ". " + sorted.get(i));
+        ui.showMessage("Transactions sorted by " + sortBy + " (indices match delete/edit):");
+        for (Transaction t : sorted) {
+            ui.showMessage(list.getOriginalIndex(t) + ". " + t);
         }
     }
 }

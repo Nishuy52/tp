@@ -101,6 +101,22 @@ public class TransactionList {
     }
 
     /**
+     * Returns the 1-based position of the given transaction in the original insertion-order list.
+     * Uses object identity (==) for the lookup.
+     *
+     * @param t the transaction to find
+     * @return 1-based index, or -1 if not found
+     */
+    public int getOriginalIndex(Transaction t) {
+        for (int i = 0; i < transactions.size(); i++) {
+            if (transactions.get(i) == t) {
+                return i + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Returns a new list containing all transactions sorted by the given comparator.
      * The original list order is not modified.
      *
