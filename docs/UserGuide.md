@@ -417,7 +417,7 @@ MoneyBagProMax automatically saves your transaction data in three text files, bo
 
 | Action                 | Format                                                                 | Example                                      |
 |------------------------|------------------------------------------------------------------------|----------------------------------------------|
-| **Add Expense**        | `add [expense-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`       | `add food/10 desc/lunch d/2025-03-01`        |
+| **Add Expense**        | `add [expense-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`       | `add food/10 desc/lunch d/2026-03-01`        |
 | **Add Income**         | `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `add salary/500 desc/allowance d/2026-03-01` |
 | **List**               | `list`                                                                 | —                                            |
 | **Find**               | `find KEYWORD`                                                         | `find lunch`                                 |
