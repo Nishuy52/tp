@@ -47,16 +47,16 @@ public class CategoryCommand extends Command {
         switch (action) {
         case "add":
             if (Expense.VALID_CATEGORIES.contains(name)) {
-                ui.showMessage("'" + name + "' is already a built-in category.");
+                ui.showMessage("[ERROR!] '" + name + "' is already a built-in category.");
             } else if (cm.addCustomCategory(name)) {
                 ui.showMessage("Custom category added: " + name);
             } else {
-                ui.showMessage("Category '" + name + "' already exists.");
+                ui.showMessage("[ERROR!] Category '" + name + "' already exists.");
             }
             break;
         case "remove":
             if (Expense.VALID_CATEGORIES.contains(name)) {
-                ui.showMessage("Cannot remove built-in category '" + name + "'.");
+                ui.showMessage("[ERROR!] Cannot remove built-in category '" + name + "'.");
             } else {
                 boolean inUse = false;
                 for (int i = 0; i < list.size(); i++) {
@@ -74,12 +74,12 @@ public class CategoryCommand extends Command {
                     }
                 }
                 if (inUse) {
-                    ui.showMessage("Cannot remove '" + name + "': it is used by existing transactions"
-                            + " or recurring templates.");
+                    ui.showMessage("[ERROR!] Cannot remove '" + name + "': it is used by existing"
+                                           + " transactions or recurring templates.");
                 } else if (cm.removeCustomCategory(name)) {
                     ui.showMessage("Custom category removed: " + name);
                 } else {
-                    ui.showMessage("Custom category '" + name + "' not found.");
+                    ui.showMessage("[ERROR!] Custom category '" + name + "' not found.");
                 }
             }
             break;
