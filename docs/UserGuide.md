@@ -477,7 +477,7 @@ Valid values: `frequency` must be `DAILY`, `WEEKLY`, or `MONTHLY`; use `null` fo
 | **Summary**            | `summary [TYPE] [month/YYYY-MM]`                                       | `summary all`                                |
 | **Sort**               | `sort by/CRITERIA`                                                     | `sort by/date`                               |
 | **Delete**             | `delete ENTRY_INDEX`                                                   | `delete 3`                                   |
-| **Edit**               | `edit INDEX [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `edit 3 food/20 desc/dinner d/2026-03-20`    |
+| **Edit**               | `edit ENTRY_INDEX CATEGORY/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`    | `edit 3 food/20 desc/dinner d/2026-03-20`    |
 | **Undo**               | `undo`                                                                 | —                                            |
 | **Redo**               | `redo`                                                                 | —                                            |
 | **Budget Set**         | `budget set AMOUNT`                                                    | `budget set 1000`                            |
