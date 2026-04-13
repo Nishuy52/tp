@@ -28,6 +28,7 @@ manage budgets, and gain insights into your spending habits via a simple applica
     - [Filtering Transactions: `filter`](#filtering-transactions-filter)
     - [Exporting to CSV: `export-csv`](#exporting-to-csv-export-csv)
     - [Exporting Data File: `export-data`](#exporting-data-file-export-data)
+    - [Viewing the Help list: `help`](#viewing-the-help-list-help)
     - [Exiting the Application: `exit`](#exiting-the-application-exit)
 - [Command Summary](#command-summary)
 
@@ -395,6 +396,17 @@ Copies the internal data file to a location of your choice. Useful for backing u
 
 ---
 
+### Viewing the Help List: `help`
+Shows the various commands that are available to be used in the MoneyBagProMax application.
+Will also show the format of the various commands.
+
+**Format**: `help`
+
+**Examples**:
+- `help` Shows all available commands
+
+---
+
 ### Exiting the Application: `exit`
 Exits the MoneyBagProMax application.
 
@@ -480,4 +492,5 @@ Valid values: `frequency` must be `DAILY`, `WEEKLY`, or `MONTHLY`; use `null` fo
 | **Filter**             | `filter from/YYYY-MM-DD to/YYYY-MM-DD`                                 | `filter from/2026-01-01 to/2026-03-31`       |
 | **Export CSV**         | `export-csv FILEPATH`                                                  | `export-csv ~/transactions.csv`              |
 | **Export Data**        | `export-data FILEPATH`                                                 | `export-data ~/backup/transactions.txt`      |
+| **Help**               | `help`                                                                 | —                                            |
 | **Exit**               | `exit`                                                                 | —                                            |
