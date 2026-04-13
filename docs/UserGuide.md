@@ -349,7 +349,8 @@ Filters and displays only the transactions that fall within a specified date ran
 - `filter from/2026-01-01 to/2026-03-31` Displays all transactions from 1st January 2026 to 31st March 2026.
 
 > [NOTE]
-> Both `from/` and `to/` are compulsory.
+> 1. Both `from/` and `to/` are compulsory.
+> 2. The `from/` date **cannot be** after the `to/` date. The application will throw an error.
 
 ---
 
