@@ -9,11 +9,28 @@ This project builds on ideas and resources from the following sources:
 - **Java SE 17 Documentation**: [`java.time.LocalDate`](https://docs.oracle.com/en/java/se/17/docs/api/java.base/java/time/LocalDate.html) and [`java.util.logging`](https://docs.oracle.com/en/java/se/17/docs/api/java.logging/java/util/logging/package-summary.html) API references used throughout the codebase.
 - **[PlantUML](https://plantuml.com/)**: all UML sequence and class diagrams in this guide were generated using PlantUML.
 - **CS2113 Teaching Team, National University of Singapore**: the individual project (IP) phase of CS2113 provided the foundational scaffolding and iterative development process that each team member independently built upon before this team project (TP). Special thanks to the course instructors for the structured guidance throughout both phases.
+
+---
 # Design
 
 ## Architecture
 ![Architecture Diagram](diagrams/ArchitectureDiagram.png)
-(Overall system architecture diagram and explanation)
+
+Since MoneyBagProMax is a **classic layered CLI Architecture**, each component has a single, well-defined responsibility and data flows through them
+in one direction.
+- **Ui is the entry point for the user.** It owns all input collection and output rendering. 
+Rather than scattering print and input calls throughout the codebase, 
+everything the user ever sees or types goes through Ui.
+- **Parser sits immediately after Ui** and translates raw string input into a structured intent. 
+It doesn't know what a transaction is, it just knows how to read "add 50 lunch" and turn it into something the rest of the system can act on.
+- **Command is the brain of the application.** It receives the parsed instruction and decides what to do: validate it, call methods on TransactionList, and determine what response to hand back. 
+Command then calls back into Ui to render its result, allowing Command to drive what the user sees without Ui needing to know about the outcome in advance.
+- **TransactionList is your in-memory data model.** It holds the list of transactions for the current session and exposes operations on it.
+It just manages the data.
+- **Storage handles persistence through different sessions.** TransactionList delegates to it whenever the data needs to be saved or loaded, 
+keeping file I/O completely decoupled from the actual logic.
+
+---
 
 ## Components
 ### Parser
